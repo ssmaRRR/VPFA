@@ -65,7 +65,7 @@ export default function Transactions() {
     try {
       await api.createTransaction({
         suma: parseFloat(suma),
-        categorie,
+        categorie: tip === 'venit' ? 'Venit' : categorie,
         tip,
         descriere,
         data: data ? new Date(data).toISOString() : null
@@ -197,18 +197,20 @@ export default function Transactions() {
                 />
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Categorie</label>
-                <select
-                  className="input-field"
-                  value={categorie}
-                  onChange={(e) => setCategorie(e.target.value)}
-                >
-                  {CATEGORII.map(c => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
-              </div>
+              {tip === 'cheltuiala' && (
+                <div className="form-group">
+                  <label className="form-label">Categorie</label>
+                  <select
+                    className="input-field"
+                    value={categorie}
+                    onChange={(e) => setCategorie(e.target.value)}
+                  >
+                    {CATEGORII.map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               <div className="form-group">
                 <label className="form-label">Descriere / Comerciant</label>
@@ -317,7 +319,12 @@ export default function Transactions() {
                 <select
                   className="input-field"
                   value={tipFilter}
-                  onChange={(e) => setTipFilter(e.target.value)}
+                  onChange={(e) => {
+                    setTipFilter(e.target.value);
+                    if (e.target.value === 'venit') {
+                      setCatFilter('');
+                    }
+                  }}
                   style={{ width: '130px', padding: '10px 12px' }}
                 >
                   <option value="">Toate Tipurile</option>
@@ -326,17 +333,19 @@ export default function Transactions() {
                 </select>
 
                 {/* Filtru Categorie */}
-                <select
-                  className="input-field"
-                  value={catFilter}
-                  onChange={(e) => setCatFilter(e.target.value)}
-                  style={{ width: '150px', padding: '10px 12px' }}
-                >
-                  <option value="">Toate Categoriile</option>
-                  {CATEGORII.map(c => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
+                {tipFilter !== 'venit' && (
+                  <select
+                    className="input-field"
+                    value={catFilter}
+                    onChange={(e) => setCatFilter(e.target.value)}
+                    style={{ width: '150px', padding: '10px 12px' }}
+                  >
+                    <option value="">Toate Categoriile</option>
+                    {CATEGORII.map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                )}
               </div>
             </div>
 
