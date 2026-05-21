@@ -1,0 +1,239 @@
+import React from 'react';
+import { 
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, 
+  ResponsiveContainer, PieChart, Pie, Cell 
+} from 'recharts';
+
+// Paleta de culori pentru activele de investiții
+const PIE_COLORS = ['#6c5dd3', '#00f2fe', '#ffa502', '#05c46b', '#ff5e57', '#a4b0be'];
+
+// Tooltip personalizat stilizat ca glassmorphism
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="custom-chart-tooltip" style={{
+        background: 'rgba(15, 12, 38, 0.85)',
+        border: '1px solid rgba(108, 93, 211, 0.3)',
+        padding: '10px 15px',
+        borderRadius: '8px',
+        backdropFilter: 'blur(8px)',
+        color: '#fff',
+        fontSize: '0.85rem'
+      }}>
+        <p style={{ margin: 0, fontWeight: 'bold', marginBottom: '5px' }}>{label}</p>
+        {payload.map((pld, index) => (
+          <div key={index} style={{ color: pld.color, display: 'flex', justifyContent: 'space-between', gap: '20px' }}>
+            <span>{pld.name}:</span>
+            <span style={{ fontWeight: '600' }}>{pld.value.toFixed(2)} RON</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
+// Tooltip pentru alocare portofoliu
+const PieCustomTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="custom-chart-tooltip" style={{
+        background: 'rgba(15, 12, 38, 0.85)',
+        border: '1px solid rgba(108, 93, 211, 0.3)',
+        padding: '10px 15px',
+        borderRadius: '8px',
+        backdropFilter: 'blur(8px)',
+        color: '#fff',
+        fontSize: '0.85rem'
+      }}>
+        <p style={{ margin: 0, fontWeight: 'bold', color: payload[0].color }}>{data.clasa_active}</p>
+        <p style={{ margin: '3px 0 0 0' }}>Proporție: <strong>{data.procent}%</strong></p>
+        <p style={{ margin: '3px 0 0 0' }}>Valoare lunară: <strong>{data.valoare_estimata.toFixed(2)} RON</strong></p>
+      </div>
+    );
+  }
+  return null;
+};
+
+export function TrendChart({ data }) {
+  return (
+    <div style={{ width: '100%', height: 320 }}>
+      <ResponsiveContainer>
+        <AreaChart
+          data={data}
+          margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+        >
+          <defs>
+            <linearGradient id="colorVenituri" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#05c46b" stopOpacity={0.4}/>
+              <stop offset="95%" stopColor="#05c46b" stopOpacity={0.0}/>
+            </linearGradient>
+            <linearGradient id="colorCheltuieli" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#6c5dd3" stopOpacity={0.4}/>
+              <stop offset="95%" stopColor="#6c5dd3" stopOpacity={0.0}/>
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" />
+          <XAxis 
+            dataKey="luna" 
+            stroke="#a4b0be" 
+            fontSize={11} 
+            tickLine={false}
+          />
+          <YAxis 
+            stroke="#a4b0be" 
+            fontSize={11} 
+            tickLine={false}
+            axisLine={false}
+          />
+          <Tooltip content={<CustomTooltip />} />
+          <Legend 
+            verticalAlign="top" 
+            height={36} 
+            iconType="circle"
+            wrapperStyle={{ fontSize: '0.85rem' }}
+          />
+          <Area 
+            type="monotone" 
+            name="Venituri" 
+            dataKey="venituri" 
+            stroke="#05c46b" 
+            strokeWidth={3}
+            fillOpacity={1} 
+            fill="url(#colorVenituri)" 
+          />
+          <Area 
+            type="monotone" 
+            name="Cheltuieli" 
+            dataKey="cheltuieli" 
+            stroke="#6c5dd3" 
+            strokeWidth={3}
+            fillOpacity={1} 
+            fill="url(#colorCheltuieli)" 
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+export function ForecastChart({ historicalData, forecastData }) {
+  // Combinăm istoricul cu prognoza pentru un grafic continuu.
+  // Istoricul se termină unde începe prognoza.
+  const chartData = [
+    ...historicalData.map(h => ({ data: h.data, sold_istoric: h.sold_estimat, sold_prognozat: null })),
+    // Adăugăm ultimul punct istoric ca punct de plecare pentru linia de prognoză pentru continuitate
+    { 
+      data: historicalData[historicalData.length - 1]?.data || '', 
+      sold_istoric: historicalData[historicalData.length - 1]?.sold_estimat || null, 
+      sold_prognozat: historicalData[historicalData.length - 1]?.sold_estimat || null 
+    },
+    ...forecastData.map(f => ({ data: f.data, sold_istoric: null, sold_prognozat: f.sold_estimat }))
+  ];
+
+  return (
+    <div style={{ width: '100%', height: 320 }}>
+      <ResponsiveContainer>
+        <AreaChart
+          data={chartData}
+          margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+        >
+          <defs>
+            <linearGradient id="colorIstoric" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#00f2fe" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="#00f2fe" stopOpacity={0.0}/>
+            </linearGradient>
+            <linearGradient id="colorPrognoza" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#ffa502" stopOpacity={0.2}/>
+              <stop offset="95%" stopColor="#ffa502" stopOpacity={0.0}/>
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" />
+          <XAxis dataKey="data" stroke="#a4b0be" fontSize={11} tickLine={false} />
+          <YAxis stroke="#a4b0be" fontSize={11} tickLine={false} axisLine={false} />
+          
+          <Tooltip content={({ active, payload, label }) => {
+            if (active && payload && payload.length) {
+              const val = payload[0].value;
+              const name = payload[0].name;
+              return (
+                <div style={{
+                  background: 'rgba(15, 12, 38, 0.85)',
+                  border: '1px solid rgba(108, 93, 211, 0.3)',
+                  padding: '10px 15px',
+                  borderRadius: '8px',
+                  color: '#fff',
+                  fontSize: '0.85rem'
+                }}>
+                  <p style={{ margin: 0, fontWeight: 'bold' }}>{label}</p>
+                  <p style={{ margin: '5px 0 0 0', color: payload[0].color }}>
+                    {name}: <strong>{val.toFixed(2)} RON</strong>
+                  </p>
+                </div>
+              );
+            }
+            return null;
+          }} />
+
+          <Legend verticalAlign="top" height={36} iconType="circle" wrapperStyle={{ fontSize: '0.85rem' }} />
+          <Area 
+            type="monotone" 
+            name="Sold Istoric" 
+            dataKey="sold_istoric" 
+            stroke="#00f2fe" 
+            strokeWidth={3}
+            fillOpacity={1} 
+            fill="url(#colorIstoric)" 
+            connectNulls
+          />
+          <Area 
+            type="monotone" 
+            name="Prognoză Sold (ML)" 
+            dataKey="sold_prognozat" 
+            stroke="#ffa502" 
+            strokeWidth={3}
+            strokeDasharray="5 5"
+            fillOpacity={1} 
+            fill="url(#colorPrognoza)" 
+            connectNulls
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+export function PortfolioAllocationChart({ data }) {
+  return (
+    <div style={{ width: '100%', height: 280, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={data}
+            cx="50%"
+            cy="50%"
+            innerRadius={60}
+            outerRadius={90}
+            paddingAngle={5}
+            dataKey="procent"
+          >
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip content={<PieCustomTooltip />} />
+          <Legend 
+            verticalAlign="bottom" 
+            height={36} 
+            iconType="circle"
+            formatter={(value, entry, index) => {
+              const item = data[index];
+              return <span style={{ color: '#f5f6fa', fontSize: '0.85rem' }}>{item.clasa_active} ({item.procent}%)</span>;
+            }}
+          />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
