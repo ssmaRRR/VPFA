@@ -235,6 +235,16 @@ input, select, textarea {
   box-shadow: 0 0 10px rgba(108, 93, 211, 0.15);
 }
 
+/* Stiluri Dropdown Select (Opțiuni) */
+select option {
+  background-color: #121023; /* Fundal închis solid, compatibil cu tema */
+  color: var(--text-primary);
+}
+
+select.input-field:focus {
+  background-color: #121023;
+}
+
 /* =====================================================================
    CHELTUIELI ȘI ALERTE (STATUS TAGS)
    ===================================================================== */
