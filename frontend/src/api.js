@@ -164,5 +164,35 @@ export const api = {
     return this.request('/ml/trigger-anomalies', {
       method: 'POST'
     });
+  },
+
+  // ===================================================================
+  // ABONAMENTE / PLĂȚI RECURENTE
+  // ===================================================================
+  async getSubscriptions() {
+    return this.request('/transactions/subscriptions');
+  },
+
+  async createSubscription(subData) {
+    return this.request('/transactions/subscriptions', {
+      method: 'POST',
+      body: {
+        nume: subData.nume,
+        suma: parseFloat(subData.suma),
+        categorie: subData.categorie,
+        zi_plata: parseInt(subData.zi_plata),
+        activa: subData.activa !== undefined ? subData.activa : true
+      }
+    });
+  },
+
+  async deleteSubscription(id) {
+    return this.request(`/transactions/subscriptions/${id}`, {
+      method: 'DELETE'
+    });
+  },
+
+  async getUpcomingSubscriptions() {
+    return this.request('/transactions/subscriptions/upcoming');
   }
 };

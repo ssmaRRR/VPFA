@@ -110,3 +110,26 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: Optional[str] = None
+
+
+# =====================================================================
+# Scheme pentru Abonamente / Plăți Recurente
+# =====================================================================
+
+class SubscriptionBase(BaseModel):
+    nume: str
+    suma: float = Field(..., gt=0, description="Suma abonamentului trebuie să fie mai mare ca 0")
+    categorie: str
+    zi_plata: int = Field(..., ge=1, le=31, description="Ziua de plată trebuie să fie între 1 și 31")
+    activa: Optional[bool] = True
+
+class SubscriptionCreate(SubscriptionBase):
+    pass
+
+class SubscriptionResponse(SubscriptionBase):
+    id: int
+    user_id: int
+
+    class Config:
+        from_attributes = True
+

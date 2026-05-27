@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../api';
 import Card from '../components/Card';
 import { PortfolioAllocationChart } from '../components/AnalyticsChart';
+import CustomSelect from '../components/CustomSelect';
 import { ShieldCheck, Info, RefreshCw, BarChart2, Coins, ArrowUpRight } from 'lucide-react';
 
 export default function Investments({ onUserUpdate }) {
@@ -156,15 +157,15 @@ export default function Investments({ onUserUpdate }) {
 
             <div className="form-group">
               <label className="form-label">Toleranță Risc Declarată</label>
-              <select
-                className="input-field"
+              <CustomSelect
                 value={tolerantaRisc}
                 onChange={(e) => setTolerantaRisc(e.target.value)}
-              >
-                <option value="Conservator">Conservator</option>
-                <option value="Moderat">Moderat</option>
-                <option value="Agresiv">Agresiv</option>
-              </select>
+                options={[
+                  { value: 'Conservator', label: 'Conservator' },
+                  { value: 'Moderat', label: 'Moderat' },
+                  { value: 'Agresiv', label: 'Agresiv' }
+                ]}
+              />
             </div>
 
             <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '10px' }}>

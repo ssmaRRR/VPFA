@@ -462,3 +462,104 @@ def import_csv_transactions(
         db.commit()
         
     return {"message": f"Import finalizat cu succes! {imported_count} tranzacții au fost adăugate din CSV."}
+
+
+# =====================================================================
+# Rute pentru Abonamente / Plăți Recurente
+# =====================================================================
+
+@router.post("/subscriptions", response_model=schemas.SubscriptionResponse, status_code=status.HTTP_201_CREATED)
+def create_subscription(
+    sub_in: schemas.SubscriptionCreate,
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Adaugă o nouă plată recurentă / abonament."""
+    db_sub = models.Subscription(
+        user_id=current_user.id,
+        nume=sub_in.nume,
+        suma=sub_in.suma,
+        categorie=sub_in.categorie,
+        zi_plata=sub_in.zi_plata,
+        activa=sub_in.activa if sub_in.activa is not None else True
+    )
+    db.add(db_sub)
+    db.commit()
+    db.refresh(db_sub)
+    return db_sub
+
+
+@router.get("/subscriptions", response_model=List[schemas.SubscriptionResponse])
+def get_subscriptions(
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Listează toate abonamentele utilizatorului curent."""
+    return db.query(models.Subscription).filter(
+        models.Subscription.user_id == current_user.id
+    ).all()
+
+
+@router.delete("/subscriptions/{sub_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_subscription(
+    sub_id: int,
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Șterge un abonament."""
+    db_sub = db.query(models.Subscription).filter(
+        models.Subscription.id == sub_id,
+        models.Subscription.user_id == current_user.id
+    ).first()
+    if not db_sub:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Abonamentul nu a fost găsit sau nu ai permisiunea de a-l șterge."
+        )
+    db.delete(db_sub)
+    db.commit()
+    return None
+
+
+@router.get("/subscriptions/upcoming", response_model=List[schemas.SubscriptionResponse])
+def get_upcoming_subscriptions(
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Listează plățile recurente din următoarele 7 zile."""
+    import calendar
+    # Determinăm data de referință (azi)
+    today = datetime.date.today()
+    
+    # Obținem abonamentele active ale utilizatorului
+    active_subs = db.query(models.Subscription).filter(
+        models.Subscription.user_id == current_user.id,
+        models.Subscription.activa == True
+    ).all()
+    
+    upcoming = []
+    for sub in active_subs:
+        # Calculăm următoarea dată de plată a abonamentului
+        last_day_this = calendar.monthrange(today.year, today.month)[1]
+        billing_this = datetime.date(today.year, today.month, min(sub.zi_plata, last_day_this))
+        
+        if billing_this >= today:
+            next_billing = billing_this
+        else:
+            # Următoarea lună
+            if today.month == 12:
+                next_month = 1
+                next_year = today.year + 1
+            else:
+                next_month = today.month + 1
+                next_year = today.year
+            last_day_next = calendar.monthrange(next_year, next_month)[1]
+            next_billing = datetime.date(next_year, next_month, min(sub.zi_plata, last_day_next))
+            
+        # Verificăm dacă este în următoarele 7 zile (inclusiv azi și azi+7)
+        delta = (next_billing - today).days
+        if 0 <= delta <= 7:
+            upcoming.append(sub)
+            
+    return upcoming
+

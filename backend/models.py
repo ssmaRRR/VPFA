@@ -29,6 +29,7 @@ class User(Base):
 
     # Relație cu tranzacțiile utilizatorului
     tranzactii = relationship("Transaction", back_populates="utilizator", cascade="all, delete-orphan")
+    abonamente = relationship("Subscription", back_populates="utilizator", cascade="all, delete-orphan")
 
 
 class Transaction(Base):
@@ -54,3 +55,23 @@ class Transaction(Base):
 
     # Relație inversă cu utilizatorul
     utilizator = relationship("User", back_populates="tranzactii")
+
+
+class Subscription(Base):
+    """
+    Modelul reprezentând un abonament sau plată recurentă.
+    """
+    __tablename__ = "abonamente"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("utilizatori.id", ondelete="CASCADE"), nullable=False)
+    
+    nume = Column(String, nullable=False)
+    suma = Column(Float, nullable=False)
+    categorie = Column(String, nullable=False)
+    zi_plata = Column(Integer, nullable=False) # ziua din lună (1-31)
+    activa = Column(Boolean, default=True)
+
+    # Relație inversă cu utilizatorul
+    utilizator = relationship("User", back_populates="abonamente")
+

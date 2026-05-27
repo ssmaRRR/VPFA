@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { api } from '../api';
 import Card from '../components/Card';
+import CustomSelect from '../components/CustomSelect';
 import { Wallet, LogIn, UserPlus } from 'lucide-react';
 
 export default function LoginRegister({ onAuthSuccess }) {
@@ -198,15 +199,15 @@ export default function LoginRegister({ onAuthSuccess }) {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                 <div className="form-group">
                   <label className="form-label">Toleranță Risc</label>
-                  <select
-                    className="input-field"
+                  <CustomSelect
                     value={tolerantaRisc}
                     onChange={(e) => setTolerantaRisc(e.target.value)}
-                  >
-                    <option value="Conservator">Conservator</option>
-                    <option value="Moderat">Moderat</option>
-                    <option value="Agresiv">Agresiv</option>
-                  </select>
+                    options={[
+                      { value: 'Conservator', label: 'Conservator' },
+                      { value: 'Moderat', label: 'Moderat' },
+                      { value: 'Agresiv', label: 'Agresiv' }
+                    ]}
+                  />
                 </div>
                 <div className="form-group">
                   <label className="form-label">Țintă Economii / Lună</label>

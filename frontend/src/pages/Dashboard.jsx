@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../api';
 import Card from '../components/Card';
 import TransactionRow from '../components/TransactionRow';
-import { TrendChart } from '../components/AnalyticsChart';
+import { TrendChart, ExpensePieChart } from '../components/AnalyticsChart';
 import { 
   TrendingUp, TrendingDown, Landmark, Percent, AlertOctagon, 
-  RefreshCw, ShieldAlert, Sparkles, PlusCircle 
+  RefreshCw, ShieldAlert, Sparkles, PlusCircle, Calendar 
 } from 'lucide-react';
 
 export default function Dashboard({ user, onAddTransactionNav }) {
@@ -13,10 +13,34 @@ export default function Dashboard({ user, onAddTransactionNav }) {
   const [trends, setTrends] = useState([]);
   const [recentTransactions, setRecentTransactions] = useState([]);
   const [allTransactions, setAllTransactions] = useState([]);
+  const [upcomingSubs, setUpcomingSubs] = useState([]);
   const [showAnomalyModal, setShowAnomalyModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
+
+  const getExpensesByCategory = () => {
+    const expenses = allTransactions.filter(tx => tx.tip === 'cheltuiala');
+    const categoriesMap = {};
+    expenses.forEach(tx => {
+      categoriesMap[tx.categorie] = (categoriesMap[tx.categorie] || 0) + tx.suma;
+    });
+    return Object.entries(categoriesMap).map(([name, value]) => ({
+      name,
+      value: Math.round(value * 100) / 100
+    }));
+  };
+
+  const getDaysRemaining = (ziPlata) => {
+    const today = new Date();
+    const day = today.getDate();
+    let diff = ziPlata - day;
+    if (diff < 0) {
+      const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+      diff = (lastDay - day) + ziPlata;
+    }
+    return diff;
+  };
 
   const fetchData = async () => {
     try {
@@ -24,11 +48,13 @@ export default function Dashboard({ user, onAddTransactionNav }) {
       const summaryData = await api.getDashboardSummary();
       const trendsData = await api.getMonthlyTrends();
       const txData = await api.getTransactions();
+      const upcomingData = await api.getUpcomingSubscriptions();
       
       setSummary(summaryData);
       setTrends(trendsData);
       setAllTransactions(txData);
       setRecentTransactions(txData.slice(0, 5)); // Ultimele 5 tranzacții
+      setUpcomingSubs(upcomingData);
     } catch (err) {
       console.error(err);
       setMessage({ text: 'Eroare la preluarea datelor financiare.', type: 'error' });
@@ -36,6 +62,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     fetchData();
@@ -313,46 +340,112 @@ export default function Dashboard({ user, onAddTransactionNav }) {
         display: 'grid',
         gridTemplateColumns: '2fr 1fr',
         gap: '25px',
-        alignItems: 'start'
+        alignItems: 'stretch'
       }}>
-        {/* Grafic Evoluție */}
-        <Card title="Evoluție Venituri vs Cheltuieli">
-          {trends.length > 0 ? (
-            <TrendChart data={trends} />
-          ) : (
-            <div style={{ textAlign: 'center', padding: '50px 0', color: 'var(--text-secondary)' }}>
-              Apasă pe butonul "Simulează Sincronizare" pentru a vizualiza graficul evoluției tale financiare.
-            </div>
-          )}
-        </Card>
-
-        {/* Tranzacții Recente */}
-        <Card title="Tranzacții Recente">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            {recentTransactions.length > 0 ? (
-              recentTransactions.map((tx) => (
-                <TransactionRow 
-                  key={tx.id} 
-                  transaction={tx} 
-                  onDelete={handleDeleteTx} 
-                />
-              ))
+        {/* Coloana Stângă: Grafice */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
+          {/* Grafic Evoluție */}
+          <Card title="Evoluție Venituri vs Cheltuieli">
+            {trends.length > 0 ? (
+              <TrendChart data={trends} />
             ) : (
-              <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-secondary)' }}>
-                Nu există nicio tranzacție salvată.
+              <div style={{ textAlign: 'center', padding: '50px 0', color: 'var(--text-secondary)' }}>
+                Apasă pe butonul "Simulează Sincronizare" pentru a vizualiza graficul evoluției tale financiare.
               </div>
             )}
-            
-            <button 
-              className="btn btn-secondary" 
-              onClick={onAddTransactionNav}
-              style={{ width: '100%', marginTop: '10px' }}
-            >
-              <PlusCircle size={16} />
-              Vezi toate / Adaugă manual
-            </button>
-          </div>
-        </Card>
+          </Card>
+
+          {/* Grafic Distribuție Cheltuieli pe Categorii */}
+          <Card title="Distribuția Cheltuielilor pe Categorii (Donut Chart)">
+            {allTransactions.filter(tx => tx.tip === 'cheltuiala').length > 0 ? (
+              <ExpensePieChart data={getExpensesByCategory()} />
+            ) : (
+              <div style={{ textAlign: 'center', padding: '50px 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                Nu există cheltuieli înregistrate pentru a afișa distribuția pe categorii.
+              </div>
+            )}
+          </Card>
+        </div>
+
+        {/* Coloana Dreaptă: Tranzacții Recente și Plăți Recurente */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
+          {/* Tranzacții Recente */}
+          <Card title="Tranzacții Recente">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              {recentTransactions.length > 0 ? (
+                recentTransactions.map((tx) => (
+                  <TransactionRow 
+                    key={tx.id} 
+                    transaction={tx} 
+                    onDelete={handleDeleteTx} 
+                  />
+                ))
+              ) : (
+                <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-secondary)' }}>
+                  Nu există nicio tranzacție salvată.
+                </div>
+              )}
+              
+              <button 
+                className="btn btn-secondary" 
+                onClick={onAddTransactionNav}
+                style={{ width: '100%', marginTop: '10px' }}
+              >
+                <PlusCircle size={16} />
+                Vezi toate / Adaugă manual
+              </button>
+            </div>
+          </Card>
+
+          {/* Următoarele Plăți Recurente */}
+          <Card title="Următoarele Plăți Recurente (7 Zile)">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {upcomingSubs.length > 0 ? (
+                upcomingSubs.map((sub) => (
+                  <div 
+                    key={sub.id}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: '12px 14px',
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '8px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{
+                        background: 'rgba(197, 227, 132, 0.1)',
+                        color: 'var(--primary)',
+                        padding: '8px',
+                        borderRadius: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}>
+                        <Calendar size={16} />
+                      </div>
+                      <div>
+                        <h4 style={{ fontSize: '0.9rem', fontWeight: '600', margin: 0 }}>{sub.nume}</h4>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                          Ziua {sub.zi_plata} (peste {getDaysRemaining(sub.zi_plata)} {getDaysRemaining(sub.zi_plata) === 1 ? 'zi' : 'zile'})
+                        </span>
+                      </div>
+                    </div>
+                    <span style={{ fontSize: '0.95rem', fontWeight: '700', color: '#ebd5c7' }}>
+                      -{sub.suma.toLocaleString('ro-RO')} RON
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div style={{ textAlign: 'center', padding: '30px 0', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                  Nicio plată programată în următoarele 7 zile.
+                </div>
+              )}
+            </div>
+          </Card>
+        </div>
       </div>
 
       {/* Modal Afișare Anomalii */}

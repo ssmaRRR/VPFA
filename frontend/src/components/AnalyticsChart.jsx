@@ -236,3 +236,56 @@ export function PortfolioAllocationChart({ data }) {
     </div>
   );
 }
+
+
+export function ExpensePieChart({ data }) {
+  return (
+    <div style={{ width: '100%', height: 320, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={data}
+            cx="50%"
+            cy="50%"
+            innerRadius={60}
+            outerRadius={90}
+            paddingAngle={4}
+            dataKey="value"
+          >
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip content={({ active, payload }) => {
+            if (active && payload && payload.length) {
+              const item = payload[0].payload;
+              return (
+                <div style={{
+                  background: 'rgba(15, 12, 38, 0.9)',
+                  border: '1px solid rgba(197, 227, 132, 0.3)',
+                  padding: '8px 12px',
+                  borderRadius: '8px',
+                  color: '#fff',
+                  fontSize: '0.85rem'
+                }}>
+                  <p style={{ margin: 0, fontWeight: 'bold', color: payload[0].color }}>{item.name}</p>
+                  <p style={{ margin: '3px 0 0 0' }}>Sumă: <strong>{item.value.toLocaleString('ro-RO')} RON</strong></p>
+                </div>
+              );
+            }
+            return null;
+          }} />
+          <Legend 
+            verticalAlign="bottom" 
+            iconType="circle"
+            formatter={(value, entry, index) => {
+              const item = data[index];
+              return <span style={{ color: 'var(--text-primary)', fontSize: '0.85rem' }}>{item.name} ({item.value.toLocaleString('ro-RO')} RON)</span>;
+            }}
+          />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
