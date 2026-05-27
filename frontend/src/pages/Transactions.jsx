@@ -141,12 +141,29 @@ export default function Transactions() {
     }
 
     try {
+      let txDate = null;
+      if (data) {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const todayStr = `${year}-${month}-${day}`;
+
+        if (data === todayStr) {
+          txDate = now.toISOString();
+        } else {
+          txDate = new Date(data + 'T12:00:00').toISOString();
+        }
+      } else {
+        txDate = new Date().toISOString();
+      }
+
       await api.createTransaction({
         suma: parseFloat(suma),
         categorie: tip === 'venit' ? 'Venit' : categorie,
         tip,
         descriere,
-        data: data ? new Date(data).toISOString() : null
+        data: txDate
       });
 
       setSuccess('Tranzacție salvată cu succes! Detecția anomaliilor a fost actualizată.');
