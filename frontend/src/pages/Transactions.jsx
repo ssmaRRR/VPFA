@@ -217,7 +217,7 @@ export default function Transactions() {
                 <input
                   type="text"
                   className="input-field"
-                  placeholder="ex: Cumpărături săptămânale Lidl"
+                  placeholder={tip === 'venit' ? 'ex: Salariu lunar, Transfer primit, Cadou...' : 'ex: Cumpărături săptămânale Lidl'}
                   value={descriere}
                   onChange={(e) => setDescriere(e.target.value)}
                   required
@@ -325,7 +325,7 @@ export default function Transactions() {
                       setCatFilter('');
                     }
                   }}
-                  style={{ width: '130px', padding: '10px 12px' }}
+                  style={{ minWidth: '150px', width: 'auto', padding: '10px 32px 10px 12px' }}
                 >
                   <option value="">Toate Tipurile</option>
                   <option value="venit">Venituri</option>
@@ -338,7 +338,7 @@ export default function Transactions() {
                     className="input-field"
                     value={catFilter}
                     onChange={(e) => setCatFilter(e.target.value)}
-                    style={{ width: '150px', padding: '10px 12px' }}
+                    style={{ minWidth: '175px', width: 'auto', padding: '10px 32px 10px 12px' }}
                   >
                     <option value="">Toate Categoriile</option>
                     {CATEGORII.map(c => (

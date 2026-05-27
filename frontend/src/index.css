@@ -241,6 +241,10 @@ select option {
   color: var(--text-primary);
 }
 
+select.input-field {
+  padding-right: 32px; /* Spațiu pentru săgeata nativă */
+}
+
 select.input-field:focus {
   background-color: #121023;
 }
