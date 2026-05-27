@@ -513,9 +513,9 @@ export default function Transactions() {
 
       {/* Tab: Abonamente & Plăți Recurente */}
       {activeTab === 'abonamente' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '25px', alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '25px', alignItems: 'stretch' }}>
           {/* Adăugare Abonament stânga */}
-          <Card title="Adăugare Abonament / Plată Recurentă">
+          <Card title="Adăugare Abonament / Plată Recurentă" style={{ height: '100%' }}>
             <form onSubmit={handleAddSubscription}>
               <div className="form-group">
                 <label className="form-label">Nume Abonament / Serviciu</label>
@@ -573,13 +573,22 @@ export default function Transactions() {
           </Card>
 
           {/* Listă Abonamente Active dreapta */}
-          <Card title="Abonamente Active & Plăți Programate">
+          <Card title="Abonamente Active & Plăți Programate" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             {loading ? (
               <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-secondary)' }}>
                 Se încarcă abonamentele...
               </div>
             ) : subscriptions.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <div style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '15px',
+                flex: 1,
+                minHeight: 0,
+                maxHeight: '500px',
+                overflowY: 'auto',
+                paddingRight: '5px'
+              }}>
                 {subscriptions.map((sub) => (
                   <div 
                     key={sub.id} 
