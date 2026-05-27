@@ -58,7 +58,7 @@ const PieCustomTooltip = ({ active, payload }) => {
 
 export function TrendChart({ data }) {
   return (
-    <div style={{ width: '100%', height: 320 }}>
+    <div style={{ width: '100%', height: 260 }}>
       <ResponsiveContainer>
         <AreaChart
           data={data}
@@ -238,7 +238,7 @@ export function PortfolioAllocationChart({ data }) {
 }
 
 
-export function ExpensePieChart({ data, height = 320 }) {
+export function ExpensePieChart({ data, height = 280 }) {
   return (
     <div style={{ width: '100%', height, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <ResponsiveContainer width="100%" height="100%">
@@ -247,8 +247,8 @@ export function ExpensePieChart({ data, height = 320 }) {
             data={data}
             cx="50%"
             cy="50%"
-            innerRadius={height < 300 ? 50 : 60}
-            outerRadius={height < 300 ? 75 : 90}
+            innerRadius={height < 280 ? 45 : 55}
+            outerRadius={height < 280 ? 70 : 82}
             paddingAngle={4}
             dataKey="value"
           >
