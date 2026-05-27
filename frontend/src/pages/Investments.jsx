@@ -179,7 +179,7 @@ export default function Investments({ onUserUpdate }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
             
             {/* Profil recomandat */}
-            <Card title="Portofoliu Recomandat de Algoritmul K-Means" style={{ display: 'flex', flexDirection: 'column', background: 'rgba(26, 21, 52, 0.3)' }}>
+            <Card title="Portofoliu Recomandat de Algoritmul K-Means" style={{ display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '15px' }}>
                 <h3 style={{ fontSize: '1.25rem', color: 'var(--secondary)' }} className="glow-text">
                   {investments.profil_nume}
@@ -195,7 +195,7 @@ export default function Investments({ onUserUpdate }) {
             </Card>
 
             {/* Grafic de Distribuție active și Sume absolute */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '25px', alignItems: 'center' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '25px', alignItems: 'stretch' }}>
               {/* Grafic Pie */}
               <Card title="Alocare Active (%)">
                 <PortfolioAllocationChart data={investments.alocare} />
