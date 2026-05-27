@@ -691,7 +691,7 @@ select.input-field:focus {
   display: grid;
   grid-template-columns: 2.2fr 1fr;
   gap: 30px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .dashboard-combined-list {

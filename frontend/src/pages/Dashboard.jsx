@@ -378,7 +378,8 @@ export default function Dashboard({ user, onAddTransactionNav }) {
                   display: 'flex', 
                   flexDirection: 'column', 
                   gap: '12px',
-                  maxHeight: '270px',
+                  flex: 1,
+                  minHeight: 0,
                   overflowY: 'auto',
                   paddingRight: '5px'
                 }}>
