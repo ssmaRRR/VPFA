@@ -226,8 +226,8 @@ export default function Dashboard({ user, onAddTransactionNav }) {
           {/* Card Cheltuieli */}
           <Card className="summary-card" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
             <div style={{
-              background: 'rgba(108, 93, 211, 0.12)',
-              color: '#bdc5ff',
+              background: 'rgba(235, 213, 199, 0.12)',
+              color: '#ebd5c7',
               padding: '12px',
               borderRadius: '12px'
             }}>
@@ -235,7 +235,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
             </div>
             <div>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Cheltuieli Totale</span>
-              <h2 style={{ fontSize: '1.6rem', fontWeight: '700', color: '#bdc5ff' }}>
+              <h2 style={{ fontSize: '1.6rem', fontWeight: '700', color: '#ebd5c7' }}>
                 -{summary.cheltuieli_totale.toLocaleString('ro-RO')} RON
               </h2>
             </div>

@@ -5,7 +5,7 @@ import {
 } from 'recharts';
 
 // Paleta de culori pentru activele de investiții
-const PIE_COLORS = ['#6c5dd3', '#00f2fe', '#ffa502', '#05c46b', '#ff5e57', '#a4b0be'];
+const PIE_COLORS = ['#c5e384', '#a8e6cf', '#ebd5c7', '#ffb347', '#8e8680', '#5cdb95'];
 
 // Tooltip personalizat stilizat ca glassmorphism
 const CustomTooltip = ({ active, payload, label }) => {
@@ -66,23 +66,23 @@ export function TrendChart({ data }) {
         >
           <defs>
             <linearGradient id="colorVenituri" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#05c46b" stopOpacity={0.4}/>
-              <stop offset="95%" stopColor="#05c46b" stopOpacity={0.0}/>
+              <stop offset="5%" stopColor="#5cdb95" stopOpacity={0.4}/>
+              <stop offset="95%" stopColor="#5cdb95" stopOpacity={0.0}/>
             </linearGradient>
             <linearGradient id="colorCheltuieli" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#6c5dd3" stopOpacity={0.4}/>
-              <stop offset="95%" stopColor="#6c5dd3" stopOpacity={0.0}/>
+              <stop offset="5%" stopColor="#ebd5c7" stopOpacity={0.4}/>
+              <stop offset="95%" stopColor="#ebd5c7" stopOpacity={0.0}/>
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" />
           <XAxis 
             dataKey="luna" 
-            stroke="#a4b0be" 
+            stroke="#8e8680" 
             fontSize={11} 
             tickLine={false}
           />
           <YAxis 
-            stroke="#a4b0be" 
+            stroke="#8e8680" 
             fontSize={11} 
             tickLine={false}
             axisLine={false}
@@ -98,7 +98,7 @@ export function TrendChart({ data }) {
             type="monotone" 
             name="Venituri" 
             dataKey="venituri" 
-            stroke="#05c46b" 
+            stroke="#5cdb95" 
             strokeWidth={3}
             fillOpacity={1} 
             fill="url(#colorVenituri)" 
@@ -107,7 +107,7 @@ export function TrendChart({ data }) {
             type="monotone" 
             name="Cheltuieli" 
             dataKey="cheltuieli" 
-            stroke="#6c5dd3" 
+            stroke="#ebd5c7" 
             strokeWidth={3}
             fillOpacity={1} 
             fill="url(#colorCheltuieli)" 
@@ -141,17 +141,17 @@ export function ForecastChart({ historicalData, forecastData }) {
         >
           <defs>
             <linearGradient id="colorIstoric" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#00f2fe" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#00f2fe" stopOpacity={0.0}/>
+              <stop offset="5%" stopColor="#a8e6cf" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="#a8e6cf" stopOpacity={0.0}/>
             </linearGradient>
             <linearGradient id="colorPrognoza" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#ffa502" stopOpacity={0.2}/>
-              <stop offset="95%" stopColor="#ffa502" stopOpacity={0.0}/>
+              <stop offset="5%" stopColor="#ffb347" stopOpacity={0.2}/>
+              <stop offset="95%" stopColor="#ffb347" stopOpacity={0.0}/>
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" />
-          <XAxis dataKey="data" stroke="#a4b0be" fontSize={11} tickLine={false} />
-          <YAxis stroke="#a4b0be" fontSize={11} tickLine={false} axisLine={false} />
+          <XAxis dataKey="data" stroke="#8e8680" fontSize={11} tickLine={false} />
+          <YAxis stroke="#8e8680" fontSize={11} tickLine={false} axisLine={false} />
           
           <Tooltip content={({ active, payload, label }) => {
             if (active && payload && payload.length) {
@@ -160,7 +160,7 @@ export function ForecastChart({ historicalData, forecastData }) {
               return (
                 <div style={{
                   background: 'rgba(15, 12, 38, 0.85)',
-                  border: '1px solid rgba(108, 93, 211, 0.3)',
+                  border: '1px solid rgba(197, 227, 132, 0.3)',
                   padding: '10px 15px',
                   borderRadius: '8px',
                   color: '#fff',
@@ -181,7 +181,7 @@ export function ForecastChart({ historicalData, forecastData }) {
             type="monotone" 
             name="Sold Istoric" 
             dataKey="sold_istoric" 
-            stroke="#00f2fe" 
+            stroke="#a8e6cf" 
             strokeWidth={3}
             fillOpacity={1} 
             fill="url(#colorIstoric)" 
@@ -191,7 +191,7 @@ export function ForecastChart({ historicalData, forecastData }) {
             type="monotone" 
             name="Prognoză Sold (ML)" 
             dataKey="sold_prognozat" 
-            stroke="#ffa502" 
+            stroke="#ffb347" 
             strokeWidth={3}
             strokeDasharray="5 5"
             fillOpacity={1} 

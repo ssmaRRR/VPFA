@@ -155,7 +155,7 @@ export default function Transactions() {
                       padding: '10px',
                       borderRadius: '6px',
                       border: '1px solid var(--border-color)',
-                      background: tip === 'cheltuiala' ? 'rgba(108, 93, 211, 0.2)' : 'transparent',
+                      background: tip === 'cheltuiala' ? 'rgba(197, 227, 132, 0.15)' : 'transparent',
                       borderColor: tip === 'cheltuiala' ? 'var(--primary)' : 'var(--border-color)',
                       color: tip === 'cheltuiala' ? '#fff' : 'var(--text-secondary)',
                       fontWeight: '600',
