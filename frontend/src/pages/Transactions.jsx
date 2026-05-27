@@ -515,59 +515,57 @@ export default function Transactions() {
       {activeTab === 'abonamente' && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '25px', alignItems: 'stretch' }}>
           {/* Adăugare Abonament stânga */}
-          <Card title="Adăugare Abonament / Plată Recurentă" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <form onSubmit={handleAddSubscription} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-              <div style={{ flex: 1 }}>
-                <div className="form-group">
-                  <label className="form-label">Nume Abonament / Serviciu</label>
-                  <input
-                    type="text"
-                    className="input-field"
-                    placeholder="ex: Netflix, Abonament Sală, Întreținere"
-                    value={subName}
-                    onChange={(e) => setSubName(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Sumă Lunară (RON)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    className="input-field"
-                    placeholder="0.00"
-                    value={subAmount}
-                    onChange={(e) => setSubAmount(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Categorie</label>
-                  <CustomSelect
-                    value={subCategory}
-                    onChange={(e) => setSubCategory(e.target.value)}
-                    options={CATEGORII.map(c => ({ value: c, label: c }))}
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Zi de Plată (1-31)</label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="31"
-                    className="input-field"
-                    placeholder="Ziua din lună (ex: 5)"
-                    value={subDay}
-                    onChange={(e) => setSubDay(e.target.value)}
-                    required
-                  />
-                </div>
+          <Card title="Adăugare Abonament / Plată Recurentă">
+            <form onSubmit={handleAddSubscription}>
+              <div className="form-group">
+                <label className="form-label">Nume Abonament / Serviciu</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  placeholder="ex: Netflix, Abonament Sală, Întreținere"
+                  value={subName}
+                  onChange={(e) => setSubName(e.target.value)}
+                  required
+                />
               </div>
 
-              <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '20px' }}>
+              <div className="form-group">
+                <label className="form-label">Sumă Lunară (RON)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  className="input-field"
+                  placeholder="0.00"
+                  value={subAmount}
+                  onChange={(e) => setSubAmount(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Categorie</label>
+                <CustomSelect
+                  value={subCategory}
+                  onChange={(e) => setSubCategory(e.target.value)}
+                  options={CATEGORII.map(c => ({ value: c, label: c }))}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Zi de Plată (1-31)</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="31"
+                  className="input-field"
+                  placeholder="Ziua din lună (ex: 5)"
+                  value={subDay}
+                  onChange={(e) => setSubDay(e.target.value)}
+                  required
+                />
+              </div>
+
+              <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '10px' }}>
                 <PlusCircle size={18} />
                 Salvează Abonament
               </button>
@@ -575,22 +573,22 @@ export default function Transactions() {
           </Card>
 
           {/* Listă Abonamente Active dreapta */}
-          <Card title="Abonamente Active & Plăți Programate" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            {loading ? (
-              <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-secondary)' }}>
-                Se încarcă abonamentele...
-              </div>
-            ) : subscriptions.length > 0 ? (
-              <div style={{ 
-                display: 'flex', 
-                flexDirection: 'column', 
-                gap: '15px',
-                flex: 1,
-                minHeight: 0,
-                maxHeight: '500px',
-                overflowY: 'auto',
-                paddingRight: '5px'
-              }}>
+          <div style={{ height: '100%', position: 'relative' }}>
+            <Card title="Abonamente Active & Plăți Programate" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column' }}>
+              {loading ? (
+                <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-secondary)' }}>
+                  Se încarcă abonamentele...
+                </div>
+              ) : subscriptions.length > 0 ? (
+                <div style={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  gap: '15px',
+                  flex: 1,
+                  minHeight: 0,
+                  overflowY: 'auto',
+                  paddingRight: '5px'
+                }}>
                 {subscriptions.map((sub) => (
                   <div 
                     key={sub.id} 
@@ -664,7 +662,8 @@ export default function Transactions() {
                 Nu ai niciun abonament înregistrat. Completează formularul din stânga pentru a adăuga unul.
               </div>
             )}
-          </Card>
+            </Card>
+          </div>
         </div>
       )}
     </div>
