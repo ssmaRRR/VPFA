@@ -343,7 +343,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
         alignItems: 'stretch'
       }}>
         {/* Coloana Stângă: Grafice */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '25px', height: '100%' }}>
           {/* Grafic Evoluție */}
           <Card title="Evoluție Venituri vs Cheltuieli">
             {trends.length > 0 ? (
@@ -356,7 +356,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
           </Card>
 
           {/* Grafic Distribuție Cheltuieli pe Categorii */}
-          <Card title="Distribuția Cheltuielilor pe Categorii (Donut Chart)">
+          <Card title="Distribuția Cheltuielilor pe Categorii (Donut Chart)" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             {allTransactions.filter(tx => tx.tip === 'cheltuiala').length > 0 ? (
               <ExpensePieChart data={getExpensesByCategory()} />
             ) : (
@@ -368,7 +368,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
         </div>
 
         {/* Coloana Dreaptă: Tranzacții Recente și Plăți Recurente */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '25px', height: '100%' }}>
           {/* Tranzacții Recente */}
           <Card title="Tranzacții Recente">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
@@ -398,7 +398,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
           </Card>
 
           {/* Următoarele Plăți Recurente */}
-          <Card title="Următoarele Plăți Recurente (7 Zile)">
+          <Card title="Următoarele Plăți Recurente (7 Zile)" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {upcomingSubs.length > 0 ? (
                 upcomingSubs.map((sub) => (
