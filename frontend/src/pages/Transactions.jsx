@@ -268,10 +268,10 @@ export default function Transactions() {
 
       {/* Tab: Istoric Tranzacții */}
       {activeTab === 'istoric' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '25px', alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '25px', alignItems: 'stretch' }}>
           
           {/* Formulare stânga: Adăugare manuală + Import CSV */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '25px', height: '100%' }}>
             
             {/* Adăugare manuală */}
             <Card title="Adăugare Tranzacție">
@@ -426,8 +426,8 @@ export default function Transactions() {
           </div>
 
           {/* Listă tranzacții dreapta */}
-          <div>
-            <Card>
+          <div style={{ height: '100%' }}>
+            <Card style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               {/* Secțiune Filtre și Căutare */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
                 <form onSubmit={handleSearchSubmit} style={{ display: 'flex', flex: 1, gap: '10px', minWidth: '240px' }}>
@@ -479,7 +479,15 @@ export default function Transactions() {
               </div>
 
               {/* Listarea tranzacțiilor efective */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <div style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '15px', 
+                flex: 1, 
+                maxHeight: '535px', 
+                overflowY: 'auto', 
+                paddingRight: '5px' 
+              }}>
                 {loading ? (
                   <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-secondary)' }}>
                     Se încarcă tranzacțiile...
