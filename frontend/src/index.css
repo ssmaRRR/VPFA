@@ -248,23 +248,28 @@ textarea {
 
 /* Stiluri Dropdown Select (Opțiuni) */
 select option {
-  background-color: #121023;
-  /* Fundal închis solid, compatibil cu tema */
+  background-color: #150f0c; /* Fundal espresso solid pentru dropdown-uri */
   color: var(--text-primary);
 }
 
 select.input-field {
-  padding-right: 10px;
-  /* Spațiu implicit mai compact pentru săgeată */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23c9c2bd' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 18px;
+  padding-right: 28px !important;
 }
 
 .filter-select {
   width: auto !important;
-  padding: 10px 24px 10px 12px !important;
+  padding: 10px 28px 10px 12px !important;
 }
 
 select.input-field:focus {
-  background-color: #121023;
+  background-color: #150f0c;
 }
 
 /* =====================================================================

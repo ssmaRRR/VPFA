@@ -206,7 +206,7 @@ export function ForecastChart({ historicalData, forecastData }) {
 
 export function PortfolioAllocationChart({ data }) {
   return (
-    <div style={{ width: '100%', height: 280, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div style={{ width: '100%', height: 350, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
@@ -225,11 +225,10 @@ export function PortfolioAllocationChart({ data }) {
           <Tooltip content={<PieCustomTooltip />} />
           <Legend 
             verticalAlign="bottom" 
-            height={36} 
             iconType="circle"
             formatter={(value, entry, index) => {
               const item = data[index];
-              return <span style={{ color: '#f5f6fa', fontSize: '0.85rem' }}>{item.clasa_active} ({item.procent}%)</span>;
+              return <span style={{ color: 'var(--text-primary)', fontSize: '0.85rem' }}>{item.clasa_active} ({item.procent}%)</span>;
             }}
           />
         </PieChart>

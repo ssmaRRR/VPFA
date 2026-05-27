@@ -219,7 +219,7 @@ export default function Investments({ onUserUpdate }) {
                           width: '12px',
                           height: '12px',
                           borderRadius: '50%',
-                          background: index === 0 ? '#6c5dd3' : index === 1 ? '#00f2fe' : index === 2 ? '#ffa502' : index === 3 ? '#05c46b' : '#ff5e57'
+                          background: index === 0 ? '#c5e384' : index === 1 ? '#a8e6cf' : index === 2 ? '#ebd5c7' : index === 3 ? '#ffb347' : '#8e8680'
                         }}></div>
                         <span style={{ fontSize: '0.88rem', fontWeight: '500' }}>{item.clasa_active}</span>
                       </div>
