@@ -485,6 +485,7 @@ export default function Transactions() {
                 gap: '15px', 
                 flex: 1, 
                 minHeight: 0,
+                maxHeight: '690px',
                 overflowY: 'auto', 
                 paddingRight: '5px' 
               }}>
