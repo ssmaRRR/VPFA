@@ -58,7 +58,7 @@ const PieCustomTooltip = ({ active, payload }) => {
 
 export function TrendChart({ data }) {
   return (
-    <div style={{ width: '100%', height: 260 }}>
+    <div style={{ width: '100%', height: 320 }}>
       <ResponsiveContainer>
         <AreaChart
           data={data}

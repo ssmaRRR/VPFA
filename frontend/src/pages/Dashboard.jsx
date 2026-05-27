@@ -356,7 +356,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
           </Card>
 
           {/* Grafic Distribuție Cheltuieli pe Categorii & Plăți Recurente */}
-          <Card title="Distribuția Cheltuielilor & Plăți Recurente" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <Card title="Distribuția Cheltuielilor & Plăți Recurente" style={{ display: 'flex', flexDirection: 'column' }}>
             <div className="dashboard-combined-grid">
               {/* Partea Stângă: Donut Chart (2.2/3) */}
               <div>
@@ -436,11 +436,11 @@ export default function Dashboard({ user, onAddTransactionNav }) {
         </div>
 
         {/* Coloana Dreaptă: Tranzacții Recente */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '25px', height: '100%' }}>
+        <div style={{ position: 'relative' }}>
           {/* Tranzacții Recente */}
-          <Card title="Tranzacții Recente" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', flex: 1 }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          <Card title="Tranzacții Recente" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1, minHeight: 0 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', flex: 1, minHeight: 0, overflowY: 'auto' }}>
                 {recentTransactions.length > 0 ? (
                   recentTransactions.map((tx) => (
                     <TransactionRow 
