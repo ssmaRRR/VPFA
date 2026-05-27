@@ -16,12 +16,17 @@
   --border-color-glow: rgba(108, 93, 211, 0.35);
 
   /* Accente - HSL Tailored */
-  --primary: hsl(250, 72%, 60%);       /* Violet Electric */
+  --primary: hsl(250, 72%, 60%);
+  /* Violet Electric */
   --primary-hover: hsl(250, 72%, 52%);
-  --secondary: #00f2fe;                 /* Cyan Neon */
-  --success: #05c46b;                   /* Verde Vibrant */
-  --warning: #ff5e57;                   /* Roșu Coral (Anomalii) */
-  --amber: #ffa502;                     /* Portocaliu */
+  --secondary: #00f2fe;
+  /* Cyan Neon */
+  --success: #05c46b;
+  /* Verde Vibrant */
+  --warning: #ff5e57;
+  /* Roșu Coral (Anomalii) */
+  --amber: #ffa502;
+  /* Portocaliu */
 
   /* Culori Text */
   --text-primary: #f5f6fa;
@@ -60,7 +65,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-display);
   font-weight: 600;
   color: var(--text-primary);
@@ -77,7 +87,9 @@ a:hover {
   filter: brightness(1.2);
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   font-family: var(--font-body);
   color: var(--text-primary);
   outline: none;
@@ -88,13 +100,16 @@ input, select, textarea {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--bg-main);
 }
+
 ::-webkit-scrollbar-thumb {
   background: rgba(108, 93, 211, 0.3);
   border-radius: 10px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
 }
@@ -237,12 +252,18 @@ input, select, textarea {
 
 /* Stiluri Dropdown Select (Opțiuni) */
 select option {
-  background-color: #121023; /* Fundal închis solid, compatibil cu tema */
+  background-color: #121023;
+  /* Fundal închis solid, compatibil cu tema */
   color: var(--text-primary);
 }
 
 select.input-field {
-  padding-right: 32px; /* Spațiu pentru săgeata nativă */
+  padding-right: 24px; /* Spațiu implicit mai compact pentru săgeată */
+}
+
+.filter-select {
+  width: auto !important;
+  padding: 10px 24px 10px 12px !important;
 }
 
 select.input-field:focus {
@@ -282,9 +303,18 @@ select.input-field:focus {
 }
 
 @keyframes pulse {
-  0% { opacity: 0.85; }
-  50% { opacity: 1; box-shadow: 0 0 8px rgba(255, 94, 87, 0.3); }
-  100% { opacity: 0.85; }
+  0% {
+    opacity: 0.85;
+  }
+
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(255, 94, 87, 0.3);
+  }
+
+  100% {
+    opacity: 0.85;
+  }
 }
 
 /* =====================================================================
@@ -318,7 +348,8 @@ select.input-field:focus {
   flex: 1;
   padding: 30px;
   overflow-y: auto;
-  margin-left: 260px; /* Aliniat cu lățimea sidebar-ului */
+  margin-left: 260px;
+  /* Aliniat cu lățimea sidebar-ului */
   transition: var(--transition-smooth);
 }
 
@@ -327,6 +358,7 @@ select.input-field:focus {
     margin-left: 0;
     padding: 16px;
   }
+
   .sidebar {
     position: relative !important;
     width: 100% !important;
@@ -334,6 +366,7 @@ select.input-field:focus {
     border-right: none !important;
     border-bottom: 1px solid var(--border-color) !important;
   }
+
   .app-layout {
     flex-direction: column;
   }
@@ -577,7 +610,8 @@ select.input-field:focus {
   color: var(--text-muted);
 }
 
-.tx-date, .tx-source {
+.tx-date,
+.tx-source {
   display: flex;
   align-items: center;
 }
@@ -639,7 +673,13 @@ select.input-field:focus {
 .spinner {
   animation: spin 1s linear infinite;
 }
+
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }

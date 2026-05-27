@@ -317,7 +317,7 @@ export default function Transactions() {
               <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                 {/* Filtru Tip */}
                 <select
-                  className="input-field"
+                  className="input-field filter-select"
                   value={tipFilter}
                   onChange={(e) => {
                     setTipFilter(e.target.value);
@@ -325,7 +325,6 @@ export default function Transactions() {
                       setCatFilter('');
                     }
                   }}
-                  style={{ minWidth: '150px', width: 'auto', padding: '10px 32px 10px 12px' }}
                 >
                   <option value="">Toate Tipurile</option>
                   <option value="venit">Venituri</option>
@@ -335,10 +334,9 @@ export default function Transactions() {
                 {/* Filtru Categorie */}
                 {tipFilter !== 'venit' && (
                   <select
-                    className="input-field"
+                    className="input-field filter-select"
                     value={catFilter}
                     onChange={(e) => setCatFilter(e.target.value)}
-                    style={{ minWidth: '175px', width: 'auto', padding: '10px 32px 10px 12px' }}
                   >
                     <option value="">Toate Categoriile</option>
                     {CATEGORII.map(c => (
