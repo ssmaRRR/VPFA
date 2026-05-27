@@ -429,7 +429,7 @@ export default function Transactions() {
           <div style={{ height: '100%' }}>
             <Card style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               {/* Secțiune Filtre și Căutare */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px', flexShrink: 0 }}>
                 <form onSubmit={handleSearchSubmit} style={{ display: 'flex', flex: 1, gap: '10px', minWidth: '240px' }}>
                   <div style={{ position: 'relative', flex: 1 }}>
                     <input
@@ -484,7 +484,7 @@ export default function Transactions() {
                 flexDirection: 'column', 
                 gap: '15px', 
                 flex: 1, 
-                maxHeight: '535px', 
+                minHeight: 0,
                 overflowY: 'auto', 
                 paddingRight: '5px' 
               }}>
