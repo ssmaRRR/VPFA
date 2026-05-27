@@ -685,3 +685,32 @@ select.input-field:focus {
     transform: rotate(360deg);
   }
 }
+
+/* Dashboard combined card grid & list */
+.dashboard-combined-grid {
+  display: grid;
+  grid-template-columns: 2.2fr 1fr;
+  gap: 30px;
+  align-items: start;
+}
+
+.dashboard-combined-list {
+  border-left: 1px solid var(--border-color);
+  padding-left: 25px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 950px) {
+  .dashboard-combined-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .dashboard-combined-list {
+    border-left: none;
+    border-top: 1px solid var(--border-color);
+    padding-left: 0;
+    padding-top: 20px;
+  }
+}

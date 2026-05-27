@@ -355,94 +355,114 @@ export default function Dashboard({ user, onAddTransactionNav }) {
             )}
           </Card>
 
-          {/* Grafic Distribuție Cheltuieli pe Categorii */}
-          <Card title="Distribuția Cheltuielilor pe Categorii (Donut Chart)" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            {allTransactions.filter(tx => tx.tip === 'cheltuiala').length > 0 ? (
-              <ExpensePieChart data={getExpensesByCategory()} />
-            ) : (
-              <div style={{ textAlign: 'center', padding: '50px 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                Nu există cheltuieli înregistrate pentru a afișa distribuția pe categorii.
+          {/* Grafic Distribuție Cheltuieli pe Categorii & Plăți Recurente */}
+          <Card title="Distribuția Cheltuielilor & Plăți Recurente" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <div className="dashboard-combined-grid">
+              {/* Partea Stângă: Donut Chart (2.2/3) */}
+              <div>
+                {allTransactions.filter(tx => tx.tip === 'cheltuiala').length > 0 ? (
+                  <ExpensePieChart data={getExpensesByCategory()} />
+                ) : (
+                  <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                    Nu există cheltuieli înregistrate pentru a afișa distribuția pe categorii.
+                  </div>
+                )}
               </div>
-            )}
+
+              {/* Partea Dreaptă: Următoarele Plăți Recurente (1/3) */}
+              <div className="dashboard-combined-list">
+                <h4 style={{ fontSize: '0.95rem', fontWeight: '600', marginBottom: '15px', color: 'var(--text-primary)' }}>
+                  Următoarele Plăți (7 Zile)
+                </h4>
+                <div style={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  gap: '12px',
+                  maxHeight: '270px',
+                  overflowY: 'auto',
+                  paddingRight: '5px'
+                }}>
+                  {upcomingSubs.length > 0 ? (
+                    upcomingSubs.map((sub) => (
+                      <div 
+                        key={sub.id}
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '10px 12px',
+                          background: 'rgba(255, 255, 255, 0.02)',
+                          border: '1px solid var(--border-color)',
+                          borderRadius: '8px',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+                          <div style={{
+                            background: 'rgba(197, 227, 132, 0.1)',
+                            color: 'var(--primary)',
+                            padding: '6px',
+                            borderRadius: '6px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0
+                          }}>
+                            <Calendar size={14} />
+                          </div>
+                          <div style={{ minWidth: 0 }}>
+                            <h5 style={{ fontSize: '0.85rem', fontWeight: '600', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {sub.nume}
+                            </h5>
+                            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
+                              Ziua {sub.zi_plata} (peste {getDaysRemaining(sub.zi_plata)} {getDaysRemaining(sub.zi_plata) === 1 ? 'zi' : 'zile'})
+                            </span>
+                          </div>
+                        </div>
+                        <span style={{ fontSize: '0.85rem', fontWeight: '700', color: '#ebd5c7', flexShrink: 0, marginLeft: '5px' }}>
+                          -{sub.suma} RON
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
+                      Nicio plată programată în următoarele 7 zile.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </Card>
         </div>
 
-        {/* Coloana Dreaptă: Tranzacții Recente și Plăți Recurente */}
+        {/* Coloana Dreaptă: Tranzacții Recente */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '25px', height: '100%' }}>
           {/* Tranzacții Recente */}
-          <Card title="Tranzacții Recente">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              {recentTransactions.length > 0 ? (
-                recentTransactions.map((tx) => (
-                  <TransactionRow 
-                    key={tx.id} 
-                    transaction={tx} 
-                    onDelete={handleDeleteTx} 
-                  />
-                ))
-              ) : (
-                <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-secondary)' }}>
-                  Nu există nicio tranzacție salvată.
-                </div>
-              )}
+          <Card title="Tranzacții Recente" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', flex: 1 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                {recentTransactions.length > 0 ? (
+                  recentTransactions.map((tx) => (
+                    <TransactionRow 
+                      key={tx.id} 
+                      transaction={tx} 
+                      onDelete={handleDeleteTx} 
+                    />
+                  ))
+                ) : (
+                  <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-secondary)' }}>
+                    Nu există nicio tranzacție salvată.
+                  </div>
+                )}
+              </div>
               
               <button 
                 className="btn btn-secondary" 
                 onClick={onAddTransactionNav}
-                style={{ width: '100%', marginTop: '10px' }}
+                style={{ width: '100%', marginTop: '20px' }}
               >
                 <PlusCircle size={16} />
                 Vezi toate / Adaugă manual
               </button>
-            </div>
-          </Card>
-
-          {/* Următoarele Plăți Recurente */}
-          <Card title="Următoarele Plăți Recurente (7 Zile)" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {upcomingSubs.length > 0 ? (
-                upcomingSubs.map((sub) => (
-                  <div 
-                    key={sub.id}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      padding: '12px 14px',
-                      background: 'rgba(255, 255, 255, 0.02)',
-                      border: '1px solid var(--border-color)',
-                      borderRadius: '8px',
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <div style={{
-                        background: 'rgba(197, 227, 132, 0.1)',
-                        color: 'var(--primary)',
-                        padding: '8px',
-                        borderRadius: '8px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}>
-                        <Calendar size={16} />
-                      </div>
-                      <div>
-                        <h4 style={{ fontSize: '0.9rem', fontWeight: '600', margin: 0 }}>{sub.nume}</h4>
-                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                          Ziua {sub.zi_plata} (peste {getDaysRemaining(sub.zi_plata)} {getDaysRemaining(sub.zi_plata) === 1 ? 'zi' : 'zile'})
-                        </span>
-                      </div>
-                    </div>
-                    <span style={{ fontSize: '0.95rem', fontWeight: '700', color: '#ebd5c7' }}>
-                      -{sub.suma.toLocaleString('ro-RO')} RON
-                    </span>
-                  </div>
-                ))
-              ) : (
-                <div style={{ textAlign: 'center', padding: '30px 0', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-                  Nicio plată programată în următoarele 7 zile.
-                </div>
-              )}
             </div>
           </Card>
         </div>
