@@ -515,57 +515,59 @@ export default function Transactions() {
       {activeTab === 'abonamente' && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '25px', alignItems: 'stretch' }}>
           {/* Adăugare Abonament stânga */}
-          <Card title="Adăugare Abonament / Plată Recurentă" style={{ height: '100%' }}>
-            <form onSubmit={handleAddSubscription}>
-              <div className="form-group">
-                <label className="form-label">Nume Abonament / Serviciu</label>
-                <input
-                  type="text"
-                  className="input-field"
-                  placeholder="ex: Netflix, Abonament Sală, Întreținere"
-                  value={subName}
-                  onChange={(e) => setSubName(e.target.value)}
-                  required
-                />
+          <Card title="Adăugare Abonament / Plată Recurentă" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <form onSubmit={handleAddSubscription} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+              <div style={{ flex: 1 }}>
+                <div className="form-group">
+                  <label className="form-label">Nume Abonament / Serviciu</label>
+                  <input
+                    type="text"
+                    className="input-field"
+                    placeholder="ex: Netflix, Abonament Sală, Întreținere"
+                    value={subName}
+                    onChange={(e) => setSubName(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Sumă Lunară (RON)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    className="input-field"
+                    placeholder="0.00"
+                    value={subAmount}
+                    onChange={(e) => setSubAmount(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Categorie</label>
+                  <CustomSelect
+                    value={subCategory}
+                    onChange={(e) => setSubCategory(e.target.value)}
+                    options={CATEGORII.map(c => ({ value: c, label: c }))}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Zi de Plată (1-31)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="31"
+                    className="input-field"
+                    placeholder="Ziua din lună (ex: 5)"
+                    value={subDay}
+                    onChange={(e) => setSubDay(e.target.value)}
+                    required
+                  />
+                </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Sumă Lunară (RON)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  className="input-field"
-                  placeholder="0.00"
-                  value={subAmount}
-                  onChange={(e) => setSubAmount(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Categorie</label>
-                <CustomSelect
-                  value={subCategory}
-                  onChange={(e) => setSubCategory(e.target.value)}
-                  options={CATEGORII.map(c => ({ value: c, label: c }))}
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Zi de Plată (1-31)</label>
-                <input
-                  type="number"
-                  min="1"
-                  max="31"
-                  className="input-field"
-                  placeholder="Ziua din lună (ex: 5)"
-                  value={subDay}
-                  onChange={(e) => setSubDay(e.target.value)}
-                  required
-                />
-              </div>
-
-              <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '10px' }}>
+              <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '20px' }}>
                 <PlusCircle size={18} />
                 Salvează Abonament
               </button>
