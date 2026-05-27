@@ -426,8 +426,8 @@ export default function Transactions() {
           </div>
 
           {/* Listă tranzacții dreapta */}
-          <div style={{ height: '100%' }}>
-            <Card style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ height: '100%', position: 'relative' }}>
+            <Card style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column' }}>
               {/* Secțiune Filtre și Căutare */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px', flexShrink: 0 }}>
                 <form onSubmit={handleSearchSubmit} style={{ display: 'flex', flex: 1, gap: '10px', minWidth: '240px' }}>
@@ -485,7 +485,6 @@ export default function Transactions() {
                 gap: '15px', 
                 flex: 1, 
                 minHeight: 0,
-                maxHeight: '730px',
                 overflowY: 'auto', 
                 paddingRight: '5px' 
               }}>
