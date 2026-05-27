@@ -12,6 +12,8 @@ export default function Dashboard({ user, onAddTransactionNav }) {
   const [summary, setSummary] = useState(null);
   const [trends, setTrends] = useState([]);
   const [recentTransactions, setRecentTransactions] = useState([]);
+  const [allTransactions, setAllTransactions] = useState([]);
+  const [showAnomalyModal, setShowAnomalyModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
@@ -25,6 +27,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
       
       setSummary(summaryData);
       setTrends(trendsData);
+      setAllTransactions(txData);
       setRecentTransactions(txData.slice(0, 5)); // Ultimele 5 tranzacții
     } catch (err) {
       console.error(err);
@@ -149,10 +152,30 @@ export default function Dashboard({ user, onAddTransactionNav }) {
           fontSize: '0.9rem',
           display: 'flex',
           alignItems: 'center',
-          gap: '8px'
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '12px'
         }}>
-          <Sparkles size={16} />
-          {message.text}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Sparkles size={16} />
+            <span>{message.text}</span>
+          </div>
+          {message.type === 'success' && summary?.alerte_anomalii > 0 && message.text.includes('anomalii') && (
+            <button 
+              onClick={() => setShowAnomalyModal(true)}
+              className="btn btn-secondary"
+              style={{
+                padding: '6px 12px',
+                fontSize: '0.8rem',
+                border: '1px solid rgba(255,255,255,0.15)',
+                background: 'rgba(255,255,255,0.06)',
+                borderRadius: '6px',
+                cursor: 'pointer'
+              }}
+            >
+              Afișează Anomaliile
+            </button>
+          )}
         </div>
       )}
 
@@ -237,13 +260,22 @@ export default function Dashboard({ user, onAddTransactionNav }) {
           </Card>
 
           {/* Card Alerte Anomalii (ML) */}
-          <Card className="summary-card" style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '15px',
-            border: summary.alerte_anomalii > 0 ? '1px solid rgba(255, 94, 87, 0.3)' : '1px solid var(--border-color)',
-            background: summary.alerte_anomalii > 0 ? 'rgba(255, 94, 87, 0.05)' : 'var(--bg-card)'
-          }}>
+          <Card 
+            className="summary-card" 
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '15px',
+              border: summary.alerte_anomalii > 0 ? '1px solid rgba(255, 94, 87, 0.3)' : '1px solid var(--border-color)',
+              background: summary.alerte_anomalii > 0 ? 'rgba(255, 94, 87, 0.05)' : 'var(--bg-card)',
+              cursor: summary.alerte_anomalii > 0 ? 'pointer' : 'default'
+            }}
+            onClick={() => {
+              if (summary.alerte_anomalii > 0) {
+                setShowAnomalyModal(true);
+              }
+            }}
+          >
             <div style={{
               background: summary.alerte_anomalii > 0 ? 'rgba(255, 94, 87, 0.15)' : 'rgba(255, 255, 255, 0.05)',
               color: summary.alerte_anomalii > 0 ? 'var(--warning)' : 'var(--text-muted)',
@@ -258,6 +290,19 @@ export default function Dashboard({ user, onAddTransactionNav }) {
               <h2 style={{ fontSize: '1.6rem', fontWeight: '700', color: summary.alerte_anomalii > 0 ? 'var(--warning)' : 'var(--text-primary)' }}>
                 {summary.alerte_anomalii}
               </h2>
+              {summary.alerte_anomalii > 0 && (
+                <span 
+                  style={{ 
+                    fontSize: '0.75rem', 
+                    color: 'var(--warning)', 
+                    textDecoration: 'underline', 
+                    display: 'block',
+                    marginTop: '2px'
+                  }}
+                >
+                  Vezi detalii →
+                </span>
+              )}
             </div>
           </Card>
         </div>
@@ -309,6 +354,75 @@ export default function Dashboard({ user, onAddTransactionNav }) {
           </div>
         </Card>
       </div>
+
+      {/* Modal Afișare Anomalii */}
+      {showAnomalyModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: 'rgba(6, 5, 12, 0.75)',
+          backdropFilter: 'blur(10px)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000,
+          padding: '20px'
+        }}>
+          <Card 
+            title="Anomalii de Cheltuieli Detectate (ML)" 
+            style={{ 
+              width: '100%', 
+              maxWidth: '620px', 
+              background: 'rgba(18, 16, 35, 0.95)',
+              border: '1px solid rgba(255, 94, 87, 0.4)',
+              boxShadow: '0 0 25px rgba(255, 94, 87, 0.25)',
+              backdropFilter: 'blur(20px)',
+              position: 'relative'
+            }}
+          >
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '20px', fontSize: '0.9rem', lineHeight: '1.4' }}>
+              Următoarele tranzacții au fost identificate ca fiind atipice de modelul Machine Learning (Isolation Forest) pe baza sumelor sau a categoriei de consum.
+            </p>
+            
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: '12px', 
+              maxHeight: '380px', 
+              overflowY: 'auto', 
+              marginBottom: '20px', 
+              paddingRight: '5px' 
+            }}>
+              {allTransactions.filter(tx => tx.este_anomala).length > 0 ? (
+                allTransactions.filter(tx => tx.este_anomala).map((tx) => (
+                  <TransactionRow 
+                    key={tx.id} 
+                    transaction={tx} 
+                    onDelete={handleDeleteTx} 
+                  />
+                ))
+              ) : (
+                <div style={{ textAlign: 'center', padding: '30px 0', color: 'var(--text-secondary)' }}>
+                  Nu mai există nicio anomalie detectată.
+                </div>
+              )}
+            </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => setShowAnomalyModal(false)}
+                style={{ padding: '8px 20px' }}
+              >
+                Închide
+              </button>
+            </div>
+          </Card>
+        </div>
+      )}
 
       <style>{`
         .anim-spin {
