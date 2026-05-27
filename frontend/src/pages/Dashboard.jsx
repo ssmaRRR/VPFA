@@ -361,7 +361,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
               {/* Partea Stângă: Donut Chart (2.2/3) */}
               <div>
                 {allTransactions.filter(tx => tx.tip === 'cheltuiala').length > 0 ? (
-                  <ExpensePieChart data={getExpensesByCategory()} />
+                  <ExpensePieChart data={getExpensesByCategory()} height={250} />
                 ) : (
                   <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
                     Nu există cheltuieli înregistrate pentru a afișa distribuția pe categorii.
