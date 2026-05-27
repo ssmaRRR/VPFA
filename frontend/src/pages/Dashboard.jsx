@@ -53,7 +53,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
       setSummary(summaryData);
       setTrends(trendsData);
       setAllTransactions(txData);
-      setRecentTransactions(txData.slice(0, 6)); // Ultimele 6 tranzacții
+      setRecentTransactions(txData.slice(0, 7)); // Ultimele 7 tranzacții
       setUpcomingSubs(upcomingData);
     } catch (err) {
       console.error(err);
