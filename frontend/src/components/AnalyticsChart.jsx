@@ -399,7 +399,7 @@ export function PortfolioAllocationChart({ data }) {
               />
             ))}
           </Pie>
-          <Tooltip content={<PieCustomTooltip />} wrapperStyle={{ zIndex: 1000 }} />
+          <Tooltip content={<PieCustomTooltip />} wrapperStyle={{ zIndex: 1000 }} isAnimationActive={false} />
           {!isMobile && (
             <Legend 
               verticalAlign="bottom" 
@@ -416,7 +416,7 @@ export function PortfolioAllocationChart({ data }) {
       {/* Text în centrul donut chart-ului */}
       <div style={{
         position: 'absolute',
-        top: isMobile ? '49%' : '42.5%',
+        top: isMobile ? '49%' : '41%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
         textAlign: 'center',
@@ -538,6 +538,7 @@ export function ExpensePieChart({ data, height = 280 }) {
           </Pie>
           <Tooltip 
             wrapperStyle={{ zIndex: 1000 }}
+            isAnimationActive={false}
             content={({ active, payload }) => {
               if (active && payload && payload.length) {
                 const item = payload[0].payload;
@@ -576,7 +577,7 @@ export function ExpensePieChart({ data, height = 280 }) {
       {/* Text în centrul donut chart-ului */}
       <div style={{
         position: 'absolute',
-        top: isMobile ? '49%' : '42.5%',
+        top: isMobile ? '49%' : '41%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
         textAlign: 'center',
