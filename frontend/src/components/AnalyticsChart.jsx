@@ -373,7 +373,7 @@ export function PortfolioAllocationChart({ data }) {
           <Pie
             data={data}
             cx="50%"
-            cy={isMobile ? "50%" : "40%"}
+            cy={isMobile ? "50%" : "44%"}
             innerRadius={isMobile ? 72 : 62}
             outerRadius={isMobile ? 100 : 88}
             paddingAngle={5}
@@ -416,7 +416,7 @@ export function PortfolioAllocationChart({ data }) {
       {/* Text în centrul donut chart-ului */}
       <div style={{
         position: 'absolute',
-        top: isMobile ? '50%' : '40%',
+        top: isMobile ? '49%' : '42.5%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
         textAlign: 'center',
@@ -510,7 +510,7 @@ export function ExpensePieChart({ data, height = 280 }) {
           <Pie
             data={data}
             cx="50%"
-            cy={isMobile ? "50%" : "40%"}
+            cy={isMobile ? "50%" : "44%"}
             innerRadius={isMobile ? 72 : 62}
             outerRadius={isMobile ? 100 : 88}
             paddingAngle={4}
@@ -576,7 +576,7 @@ export function ExpensePieChart({ data, height = 280 }) {
       {/* Text în centrul donut chart-ului */}
       <div style={{
         position: 'absolute',
-        top: isMobile ? '50%' : '40%',
+        top: isMobile ? '49%' : '42.5%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
         textAlign: 'center',
