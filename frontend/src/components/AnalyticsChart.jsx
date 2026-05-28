@@ -367,7 +367,7 @@ export function PortfolioAllocationChart({ data }) {
   const totalValue = data.reduce((sum, item) => sum + item.valoare_estimata, 0);
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: 350, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div style={{ position: 'relative', width: '100%', height: 350 }}>
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
@@ -416,7 +416,7 @@ export function PortfolioAllocationChart({ data }) {
       {/* Text în centrul donut chart-ului */}
       <div style={{
         position: 'absolute',
-        top: isMobile ? '49%' : '41%',
+        top: isMobile ? '50%' : '44%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
         textAlign: 'center',
@@ -504,7 +504,7 @@ export function ExpensePieChart({ data, height = 280 }) {
   const chartHeight = isMobile ? 290 : height;
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: chartHeight, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div style={{ position: 'relative', width: '100%', height: chartHeight }}>
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
@@ -577,7 +577,7 @@ export function ExpensePieChart({ data, height = 280 }) {
       {/* Text în centrul donut chart-ului */}
       <div style={{
         position: 'absolute',
-        top: isMobile ? '49%' : '41%',
+        top: isMobile ? '50%' : '44%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
         textAlign: 'center',
