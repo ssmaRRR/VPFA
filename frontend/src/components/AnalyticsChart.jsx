@@ -57,9 +57,10 @@ const PieCustomTooltip = ({ active, payload }) => {
 };
 
 // Custom SVG Label component for PortfolioAllocationChart center text
-const PortfolioPieLabel = ({ viewBox, activeIndex, data, totalValue, isMobile }) => {
-  if (!viewBox) return null;
-  const { cx, cy } = viewBox;
+const PortfolioPieLabel = (props) => {
+  const { activeIndex, data, totalValue, isMobile } = props;
+  const cx = props.cx || (props.viewBox && props.viewBox.cx) || 0;
+  const cy = props.cy || (props.viewBox && props.viewBox.cy) || 0;
 
   const activeItem = activeIndex !== -1 ? data[activeIndex] : null;
   const name = activeItem ? activeItem.clasa_active : (isMobile ? "Active" : "ACTIVE");
@@ -127,9 +128,10 @@ const PortfolioPieLabel = ({ viewBox, activeIndex, data, totalValue, isMobile })
 };
 
 // Custom SVG Label component for ExpensePieChart center text
-const ExpensePieLabel = ({ viewBox, activeIndex, data, totalSum, isMobile }) => {
-  if (!viewBox) return null;
-  const { cx, cy } = viewBox;
+const ExpensePieLabel = (props) => {
+  const { activeIndex, data, totalSum, isMobile } = props;
+  const cx = props.cx || (props.viewBox && props.viewBox.cx) || 0;
+  const cy = props.cy || (props.viewBox && props.viewBox.cy) || 0;
 
   const activeItem = activeIndex !== -1 ? data[activeIndex] : null;
   const name = activeItem ? activeItem.name : (isMobile ? "Total" : "TOTAL");
@@ -397,7 +399,15 @@ export function PortfolioAllocationChart({ data }) {
               />
             ))}
             <Label 
-              content={<PortfolioPieLabel activeIndex={activeIndex} data={data} totalValue={totalValue} isMobile={isMobile} />} 
+              content={(props) => (
+                <PortfolioPieLabel 
+                  {...props} 
+                  activeIndex={activeIndex} 
+                  data={data} 
+                  totalValue={totalValue} 
+                  isMobile={isMobile} 
+                />
+              )} 
               position="center" 
             />
           </Pie>
@@ -473,7 +483,15 @@ export function ExpensePieChart({ data, height = 280 }) {
               />
             ))}
             <Label 
-              content={<ExpensePieLabel activeIndex={activeIndex} data={data} totalSum={totalSum} isMobile={isMobile} />} 
+              content={(props) => (
+                <ExpensePieLabel 
+                  {...props} 
+                  activeIndex={activeIndex} 
+                  data={data} 
+                  totalSum={totalSum} 
+                  isMobile={isMobile} 
+                />
+              )} 
               position="center" 
             />
           </Pie>
