@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, 
   ResponsiveContainer, PieChart, Pie, Cell 
@@ -205,6 +205,14 @@ export function ForecastChart({ historicalData, forecastData }) {
 }
 
 export function PortfolioAllocationChart({ data }) {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <div style={{ width: '100%', height: 350, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <ResponsiveContainer width="100%" height="100%">
@@ -212,9 +220,9 @@ export function PortfolioAllocationChart({ data }) {
           <Pie
             data={data}
             cx="50%"
-            cy="38%"
-            innerRadius={50}
-            outerRadius={75}
+            cy={isMobile ? "50%" : "40%"}
+            innerRadius={isMobile ? 55 : 50}
+            outerRadius={isMobile ? 82 : 75}
             paddingAngle={5}
             dataKey="procent"
           >
@@ -223,14 +231,16 @@ export function PortfolioAllocationChart({ data }) {
             ))}
           </Pie>
           <Tooltip content={<PieCustomTooltip />} />
-          <Legend 
-            verticalAlign="bottom" 
-            iconType="circle"
-            formatter={(value, entry, index) => {
-              const item = data[index];
-              return <span style={{ color: 'var(--text-primary)', fontSize: '0.85rem' }}>{item.clasa_active} ({item.procent}%)</span>;
-            }}
-          />
+          {!isMobile && (
+            <Legend 
+              verticalAlign="bottom" 
+              iconType="circle"
+              formatter={(value, entry, index) => {
+                const item = data[index];
+                return <span style={{ color: 'var(--text-primary)', fontSize: '0.85rem' }}>{item.clasa_active} ({item.procent}%)</span>;
+              }}
+            />
+          )}
         </PieChart>
       </ResponsiveContainer>
     </div>
@@ -239,6 +249,14 @@ export function PortfolioAllocationChart({ data }) {
 
 
 export function ExpensePieChart({ data, height = 280 }) {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <div style={{ width: '100%', height, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <ResponsiveContainer width="100%" height="100%">
@@ -246,9 +264,9 @@ export function ExpensePieChart({ data, height = 280 }) {
           <Pie
             data={data}
             cx="50%"
-            cy="38%"
-            innerRadius={height < 280 ? 38 : 55}
-            outerRadius={height < 280 ? 58 : 82}
+            cy={isMobile ? "50%" : "38%"}
+            innerRadius={isMobile ? 45 : (height < 280 ? 38 : 55)}
+            outerRadius={isMobile ? 70 : (height < 280 ? 58 : 82)}
             paddingAngle={4}
             dataKey="value"
           >
@@ -275,14 +293,16 @@ export function ExpensePieChart({ data, height = 280 }) {
             }
             return null;
           }} />
-          <Legend 
-            verticalAlign="bottom" 
-            iconType="circle"
-            formatter={(value, entry, index) => {
-              const item = data[index];
-              return <span style={{ color: 'var(--text-primary)', fontSize: '0.85rem' }}>{item.name} ({item.value.toLocaleString('ro-RO')} RON)</span>;
-            }}
-          />
+          {!isMobile && (
+            <Legend 
+              verticalAlign="bottom" 
+              iconType="circle"
+              formatter={(value, entry, index) => {
+                const item = data[index];
+                return <span style={{ color: 'var(--text-primary)', fontSize: '0.85rem' }}>{item.name} ({item.value.toLocaleString('ro-RO')} RON)</span>;
+              }}
+            />
+          )}
         </PieChart>
       </ResponsiveContainer>
     </div>
