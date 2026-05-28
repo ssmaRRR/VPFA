@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.VPFA" parent="android:Theme.Material.NoActionBar">
+        <!-- Status bar color matching our Midnight Espresso theme -->
+        <item name="android:statusBarColor">#0e0907</item>
+        <!-- Background window color -->
+        <item name="android:windowBackground">#0e0907</item>
+    </style>
+</resources>
