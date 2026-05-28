@@ -185,10 +185,20 @@ export default function Investments({ onUserUpdate }) {
                 <h3 style={{ fontSize: '1.25rem', color: 'var(--secondary)' }} className="glow-text">
                   {investments.profil_nume}
                 </h3>
-                <span className="badge badge-income" style={{ display: 'inline-flex', gap: '4px', fontSize: '0.8rem', padding: '6px 12px' }}>
-                  <ShieldCheck size={14} />
-                  Cluster {investments.cluster}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span className="badge badge-income" style={{ display: 'inline-flex', gap: '4px', fontSize: '0.8rem', padding: '6px 12px' }}>
+                    <ShieldCheck size={14} />
+                    Cluster {investments.cluster}
+                  </span>
+                  <div className="tooltip-container" style={{ color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                    <Info size={16} />
+                    <span className="tooltip-text">
+                      {investments.cluster === 0 && "Cluster 0 grupează utilizatorii cu o vârstă mai ridicată, venituri moderate, o rată mai mică de economisire sau o aversiune declarată la risc, prioritizând protejarea capitalului."}
+                      {investments.cluster === 1 && "Cluster 1 grupează utilizatorii activi, cu venituri stabile și o rată de economisire echilibrată, care acceptă o volatilitate medie pentru a obține o creștere treptată a capitalului."}
+                      {investments.cluster === 2 && "Cluster 2 grupează utilizatorii tineri, cu un orizont mare de timp, venituri ridicate sau o rată mare de economisire, dispuși să își asume riscuri mari pentru randamente maxime pe termen lung."}
+                    </span>
+                  </div>
+                </div>
               </div>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.5' }}>
                 {investments.descriere}

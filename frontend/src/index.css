@@ -714,3 +714,52 @@ select.input-field:focus {
     padding-top: 20px;
   }
 }
+
+/* Tooltip info cluster K-Means */
+.tooltip-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tooltip-container .tooltip-text {
+  visibility: hidden;
+  width: 280px;
+  background: rgba(21, 15, 12, 0.95); /* Midnight Espresso matching tooltip */
+  border: 1px solid var(--border-color-glow);
+  color: var(--text-primary);
+  text-align: left;
+  border-radius: 8px;
+  padding: 12px 14px;
+  position: absolute;
+  z-index: 100;
+  bottom: 135%;
+  right: 0;
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  transform: translateY(5px);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+  pointer-events: none;
+  font-weight: normal;
+  text-transform: none;
+}
+
+/* Săgeată pentru tooltip */
+.tooltip-container .tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 15px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: rgba(21, 15, 12, 0.95) transparent transparent transparent;
+}
+
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+}
