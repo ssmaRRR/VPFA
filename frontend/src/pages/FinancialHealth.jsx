@@ -65,14 +65,14 @@ export default function FinancialHealth() {
           <Card 
             title="Diagnoza Inteligentă a Soldului"
             style={{
-              borderLeft: forecast.runway_luni ? '4px solid var(--warning)' : '4px solid var(--success)',
-              background: 'rgba(26, 21, 52, 0.3)'
+              borderLeft: forecast.runway_luni ? '4px solid var(--warning)' : '4px solid var(--success)'
             }}
           >
             <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
               <div style={{
-                background: forecast.runway_luni ? 'rgba(255, 94, 87, 0.15)' : 'rgba(5, 196, 107, 0.15)',
+                background: forecast.runway_luni ? 'rgba(255, 111, 105, 0.12)' : 'rgba(92, 219, 149, 0.12)',
                 color: forecast.runway_luni ? 'var(--warning)' : 'var(--success)',
+                border: `1px solid ${forecast.runway_luni ? 'rgba(255, 111, 105, 0.25)' : 'rgba(92, 219, 149, 0.25)'}`,
                 padding: '15px',
                 borderRadius: '12px',
                 display: 'flex',
@@ -82,16 +82,19 @@ export default function FinancialHealth() {
                 {forecast.runway_luni ? <AlertCircle size={32} /> : <ShieldCheck size={32} />}
               </div>
               <div style={{ flex: 1, minWidth: '260px' }}>
-                <h3 style={{ fontSize: '1.25rem', marginBottom: '8px', color: '#fff' }}>
+                <h3 style={{ fontSize: '1.25rem', marginBottom: '8px', color: 'var(--text-primary)' }}>
                   {forecast.runway_luni ? 'Tendință de Scădere a Soldului' : 'Stare Financiară Pozitivă'}
                 </h3>
                 <p style={{ color: 'var(--text-primary)', fontSize: '0.95rem', lineHeight: '1.5', marginBottom: '12px' }}>
                   {forecast.mesaj_sanatate}
                 </p>
                 <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-                  <span className="badge badge-expense" style={{ display: 'inline-flex', gap: '4px', fontSize: '0.8rem', padding: '6px 12px', textTransform: 'none' }}>
+                  <span 
+                    className={`badge ${forecast.runway_luni ? 'badge-anomaly' : 'badge-income'}`} 
+                    style={{ display: 'inline-flex', gap: '4px', fontSize: '0.8rem', padding: '6px 12px', textTransform: 'none' }}
+                  >
                     <Hourglass size={14} />
-                    Rezervă Financiară (Runway): <strong>{forecast.runway_luni ? `${forecast.runway_luni} luni` : 'Nelimitat (Economisire Constantă)'}</strong>
+                    Rezervă Financiară (Runway): &nbsp;<strong>{forecast.runway_luni ? `${forecast.runway_luni} luni` : 'Nelimitat (Economisire Constantă)'}</strong>
                   </span>
                 </div>
               </div>
@@ -120,7 +123,7 @@ export default function FinancialHealth() {
                 <div style={{ display: 'flex', gap: '12px' }}>
                   <div style={{ color: 'var(--secondary)', marginTop: '2px' }}><Sparkles size={18} /></div>
                   <div>
-                    <h4 style={{ fontSize: '0.95rem', color: '#fff', marginBottom: '4px' }}>Fondul de Urgență</h4>
+                    <h4 style={{ fontSize: '0.95rem', color: 'var(--text-primary)', marginBottom: '4px' }}>Fondul de Urgență</h4>
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
                       {forecast.runway_luni 
                         ? 'Prioritatea ta numărul 1 este să stabilizezi soldul. Oprește transferurile către investiții speculative până când ai strâns echivalentul a 3 luni de cheltuieli.'
@@ -132,7 +135,7 @@ export default function FinancialHealth() {
                 <div style={{ display: 'flex', gap: '12px' }}>
                   <div style={{ color: 'var(--secondary)', marginTop: '2px' }}><TrendingUp size={18} /></div>
                   <div>
-                    <h4 style={{ fontSize: '0.95rem', color: '#fff', marginBottom: '4px' }}>Regula de Aur 50/30/20</h4>
+                    <h4 style={{ fontSize: '0.95rem', color: 'var(--text-primary)', marginBottom: '4px' }}>Regula de Aur 50/30/20</h4>
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
                       Încearcă să îți structurezi veniturile astfel: 50% pentru Necesități (chirie, facturi, mâncare de bază), 30% pentru Dorințe (ieșiri, hobby-uri) și minim 20% pentru Economii și Investiții.
                     </p>
@@ -142,7 +145,7 @@ export default function FinancialHealth() {
                 <div style={{ display: 'flex', gap: '12px' }}>
                   <div style={{ color: 'var(--secondary)', marginTop: '2px' }}><LineChart size={18} /></div>
                   <div>
-                    <h4 style={{ fontSize: '0.95rem', color: '#fff', marginBottom: '4px' }}>Automatizarea Economiilor</h4>
+                    <h4 style={{ fontSize: '0.95rem', color: 'var(--text-primary)', marginBottom: '4px' }}>Automatizarea Economiilor</h4>
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
                       Setează o plată recurentă automată în ziua de salariu care să transfere automat ținta ta de economii direct din contul curent în contul de economii sau investiții. Astfel, eviți impulsul de a cheltui banii rămași.
                     </p>
