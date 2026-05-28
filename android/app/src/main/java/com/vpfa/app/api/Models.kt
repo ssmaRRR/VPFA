@@ -65,7 +65,8 @@ data class TransactionCreateRequest(
     val tip: String, // "venit" sau "cheltuiala"
     val categorie: String,
     val descriere: String,
-    val data: String
+    val data: String? = null,
+    val sursa: String = "Manual"
 )
 
 data class UpcomingSubscription(
