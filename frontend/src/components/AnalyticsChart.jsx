@@ -374,8 +374,8 @@ export function PortfolioAllocationChart({ data }) {
             data={data}
             cx="50%"
             cy={isMobile ? "50%" : "40%"}
-            innerRadius={isMobile ? 70 : 60}
-            outerRadius={isMobile ? 102 : 90}
+            innerRadius={isMobile ? 72 : 62}
+            outerRadius={isMobile ? 100 : 88}
             paddingAngle={5}
             dataKey="procent"
             onMouseEnter={(data, index) => setActiveIndex(index)}
@@ -425,10 +425,11 @@ export function PortfolioAllocationChart({ data }) {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        width: isMobile ? '95px' : '100px',
-        height: isMobile ? '95px' : '100px',
+        width: isMobile ? '110px' : '120px',
+        height: isMobile ? '100px' : '110px',
         borderRadius: '50%',
-        zIndex: 5
+        zIndex: 5,
+        lineHeight: 1.1
       }}>
         <span style={{ 
           fontSize: isMobile ? '0.7rem' : '0.75rem', 
@@ -510,8 +511,8 @@ export function ExpensePieChart({ data, height = 280 }) {
             data={data}
             cx="50%"
             cy={isMobile ? "50%" : "40%"}
-            innerRadius={isMobile ? 65 : 55}
-            outerRadius={isMobile ? 95 : 82}
+            innerRadius={isMobile ? 72 : 62}
+            outerRadius={isMobile ? 100 : 88}
             paddingAngle={4}
             dataKey="value"
             onMouseEnter={(data, index) => setActiveIndex(index)}
@@ -584,10 +585,11 @@ export function ExpensePieChart({ data, height = 280 }) {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        width: isMobile ? '90px' : '100px',
-        height: isMobile ? '90px' : '100px',
+        width: isMobile ? '110px' : '120px',
+        height: isMobile ? '100px' : '110px',
         borderRadius: '50%',
-        zIndex: 5
+        zIndex: 5,
+        lineHeight: 1.1
       }}>
         <span style={{ 
           fontSize: isMobile ? '0.7rem' : '0.75rem', 
