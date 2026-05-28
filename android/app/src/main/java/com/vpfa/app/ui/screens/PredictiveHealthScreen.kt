@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import com.vpfa.app.api.ApiService
 import com.vpfa.app.api.ForecastResponse
 import com.vpfa.app.ui.components.GlassCard
+import com.vpfa.app.ui.components.ForecastLineChart
 import com.vpfa.app.ui.theme.*
 import kotlinx.coroutines.launch
 
@@ -29,6 +30,7 @@ import kotlinx.coroutines.launch
 fun PredictiveHealthScreen(
     apiService: ApiService,
     onNavigateToDashboard: () -> Unit,
+    onNavigateToTransactions: () -> Unit,
     onNavigateToInvestments: () -> Unit
 ) {
     var forecast by remember { mutableStateOf<ForecastResponse?>(null) }
@@ -66,6 +68,16 @@ fun PredictiveHealthScreen(
                     onClick = onNavigateToDashboard,
                     icon = { Icon(Icons.Default.Dashboard, contentDescription = null) },
                     label = { Text("Panou Control") },
+                    colors = NavigationBarItemDefaults.colors(
+                        unselectedIconColor = TextMuted,
+                        unselectedTextColor = TextMuted
+                    )
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = onNavigateToTransactions,
+                    icon = { Icon(Icons.Default.ReceiptLong, contentDescription = null) },
+                    label = { Text("Tranzacții") },
                     colors = NavigationBarItemDefaults.colors(
                         unselectedIconColor = TextMuted,
                         unselectedTextColor = TextMuted
@@ -212,6 +224,24 @@ fun PredictiveHealthScreen(
                                 }
                             }
                         }
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // Grafic Predictiv
+                    GlassCard(title = "Model Predictiv: Evoluția Soldului pe 90 de Zile (Regresie Liniară)") {
+                        ForecastLineChart(
+                            historical = fore.istoric,
+                            forecast = fore.predictie,
+                            modifier = Modifier.fillMaxWidth().height(180.dp)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Linia întreruptă portocalie reprezintă valorile estimate calculate prin modelul de regresie liniară antrenat pe tranzacțiile tale.",
+                            color = TextMuted,
+                            fontSize = 11.sp,
+                            lineHeight = 14.sp
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))

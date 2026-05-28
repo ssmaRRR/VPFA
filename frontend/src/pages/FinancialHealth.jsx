@@ -102,7 +102,7 @@ export default function FinancialHealth() {
           </Card>
 
           {/* Grafic de Prognoză */}
-          <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: '25px', alignItems: 'stretch' }}>
+          <div className="grid-3-2">
             
             {/* Grafic propriu-zis */}
             <Card title="Model Predictiv: Evoluția Soldului pe 90 de Zile (Regresie Liniară)">

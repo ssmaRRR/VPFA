@@ -109,7 +109,7 @@ export default function Investments({ onUserUpdate }) {
       )}
 
       {/* Grid Principal */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '25px', alignItems: 'start' }}>
+      <div className="grid-1-2">
         
         {/* Formular Parametri Stânga */}
         <Card title="Parametri Profil (Input Model)">
@@ -206,7 +206,7 @@ export default function Investments({ onUserUpdate }) {
             </Card>
 
             {/* Grafic de Distribuție active și Sume absolute */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '25px', alignItems: 'stretch' }}>
+            <div className="grid-1-1-2">
               {/* Grafic Pie */}
               <Card title="Alocare Active (%)">
                 <PortfolioAllocationChart data={investments.alocare} />

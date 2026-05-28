@@ -268,7 +268,7 @@ export default function Transactions() {
 
       {/* Tab: Istoric Tranzacții */}
       {activeTab === 'istoric' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '25px', alignItems: 'stretch' }}>
+        <div className="grid-1-2">
           
           {/* Formulare stânga: Adăugare manuală + Import CSV */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '25px', height: '100%' }}>
@@ -426,8 +426,8 @@ export default function Transactions() {
           </div>
 
           {/* Listă tranzacții dreapta */}
-          <div style={{ height: '100%', position: 'relative' }}>
-            <Card style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column' }}>
+          <div className="tx-card-wrapper">
+            <Card className="tx-card-absolute">
               {/* Secțiune Filtre și Căutare */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px', flexShrink: 0 }}>
                 <form onSubmit={handleSearchSubmit} style={{ display: 'flex', flex: 1, gap: '10px', minWidth: '240px' }}>
@@ -513,7 +513,7 @@ export default function Transactions() {
 
       {/* Tab: Abonamente & Plăți Recurente */}
       {activeTab === 'abonamente' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '25px', alignItems: 'stretch' }}>
+        <div className="grid-1-2">
           {/* Adăugare Abonament stânga */}
           <Card title="Adăugare Abonament / Plată Recurentă">
             <form onSubmit={handleAddSubscription}>
@@ -573,8 +573,8 @@ export default function Transactions() {
           </Card>
 
           {/* Listă Abonamente Active dreapta */}
-          <div style={{ height: '100%', position: 'relative' }}>
-            <Card title="Abonamente Active & Plăți Programate" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column' }}>
+          <div className="tx-card-wrapper">
+            <Card title="Abonamente Active & Plăți Programate" className="tx-card-absolute">
               {loading ? (
                 <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-secondary)' }}>
                   Se încarcă abonamentele...

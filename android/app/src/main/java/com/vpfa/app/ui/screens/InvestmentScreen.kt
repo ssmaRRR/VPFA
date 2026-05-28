@@ -35,6 +35,7 @@ import kotlinx.coroutines.launch
 fun InvestmentScreen(
     apiService: ApiService,
     onNavigateToDashboard: () -> Unit,
+    onNavigateToTransactions: () -> Unit,
     onNavigateToHealth: () -> Unit
 ) {
     var investments by remember { mutableStateOf<InvestmentResponse?>(null) }
@@ -75,6 +76,16 @@ fun InvestmentScreen(
                     onClick = onNavigateToDashboard,
                     icon = { Icon(Icons.Default.Dashboard, contentDescription = null) },
                     label = { Text("Panou Control") },
+                    colors = NavigationBarItemDefaults.colors(
+                        unselectedIconColor = TextMuted,
+                        unselectedTextColor = TextMuted
+                    )
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = onNavigateToTransactions,
+                    icon = { Icon(Icons.Default.ReceiptLong, contentDescription = null) },
+                    label = { Text("Tranzacții") },
                     colors = NavigationBarItemDefaults.colors(
                         unselectedIconColor = TextMuted,
                         unselectedTextColor = TextMuted

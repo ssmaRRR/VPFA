@@ -66,6 +66,24 @@ class MainActivity : ComponentActivity() {
                                         popUpTo("dashboard") { inclusive = true }
                                     }
                                 },
+                                onNavigateToTransactions = {
+                                    navController.navigate("transactions")
+                                },
+                                onNavigateToHealth = {
+                                    navController.navigate("health")
+                                },
+                                onNavigateToInvestments = {
+                                    navController.navigate("investments")
+                                }
+                            )
+                        }
+
+                        composable("transactions") {
+                            TransactionsScreen(
+                                apiService = apiService,
+                                onNavigateToDashboard = {
+                                    navController.navigate("dashboard")
+                                },
                                 onNavigateToHealth = {
                                     navController.navigate("health")
                                 },
@@ -81,6 +99,9 @@ class MainActivity : ComponentActivity() {
                                 onNavigateToDashboard = {
                                     navController.navigate("dashboard")
                                 },
+                                onNavigateToTransactions = {
+                                    navController.navigate("transactions")
+                                },
                                 onNavigateToInvestments = {
                                     navController.navigate("investments")
                                 }
@@ -92,6 +113,9 @@ class MainActivity : ComponentActivity() {
                                 apiService = apiService,
                                 onNavigateToDashboard = {
                                     navController.navigate("dashboard")
+                                },
+                                onNavigateToTransactions = {
+                                    navController.navigate("transactions")
                                 },
                                 onNavigateToHealth = {
                                     navController.navigate("health")

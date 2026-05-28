@@ -1,7 +1,7 @@
 import React from 'react';
-import { LayoutDashboard, ArrowRightLeft, LineChart, PieChart, LogOut, Wallet } from 'lucide-react';
+import { LayoutDashboard, ArrowRightLeft, LineChart, PieChart, LogOut, Wallet, X } from 'lucide-react';
 
-export default function Sidebar({ currentPage, setCurrentPage, onLogout, user }) {
+export default function Sidebar({ currentPage, setCurrentPage, onLogout, user, isOpen, onClose }) {
   const menuItems = [
     { id: 'dashboard', label: 'Panou Control', icon: LayoutDashboard },
     { id: 'transactions', label: 'Tranzacții', icon: ArrowRightLeft },
@@ -10,7 +10,11 @@ export default function Sidebar({ currentPage, setCurrentPage, onLogout, user })
   ];
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
+      <button className="sidebar-close-btn" onClick={onClose} title="Închide meniu">
+        <X size={20} />
+      </button>
+
       <div className="sidebar-logo">
         <Wallet className="logo-icon" />
         <div>
@@ -25,7 +29,10 @@ export default function Sidebar({ currentPage, setCurrentPage, onLogout, user })
           return (
             <button
               key={item.id}
-              onClick={() => setCurrentPage(item.id)}
+              onClick={() => {
+                setCurrentPage(item.id);
+                if (onClose) onClose();
+              }}
               className={`menu-item ${currentPage === item.id ? 'active' : ''}`}
             >
               <Icon size={20} />
@@ -47,7 +54,10 @@ export default function Sidebar({ currentPage, setCurrentPage, onLogout, user })
             </div>
           </div>
         )}
-        <button className="btn-logout" onClick={onLogout}>
+        <button className="btn-logout" onClick={() => {
+          onLogout();
+          if (onClose) onClose();
+        }}>
           <LogOut size={18} />
           Deconectare
         </button>

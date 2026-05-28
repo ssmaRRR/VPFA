@@ -6,11 +6,13 @@ import Dashboard from './pages/Dashboard';
 import Transactions from './pages/Transactions';
 import FinancialHealth from './pages/FinancialHealth';
 import Investments from './pages/Investments';
+import { Menu, Wallet } from 'lucide-react';
 
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -61,11 +63,29 @@ function App() {
   // Layout-ul principal al aplicației când utilizatorul este conectat
   return (
     <div className="app-layout">
+      {/* Mobile Top Header */}
+      <div className="mobile-header">
+        <div className="mobile-logo">
+          <Wallet className="logo-icon" size={24} />
+          <h2>VPFA</h2>
+        </div>
+        <button className="menu-toggle" onClick={() => setSidebarOpen(true)}>
+          <Menu size={24} />
+        </button>
+      </div>
+
+      {/* Sidebar Backdrop Overlay */}
+      {sidebarOpen && (
+        <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />
+      )}
+
       <Sidebar 
         currentPage={currentPage} 
         setCurrentPage={setCurrentPage} 
         onLogout={handleLogout} 
         user={user} 
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
       />
       <main className="main-content">
         {currentPage === 'dashboard' && (

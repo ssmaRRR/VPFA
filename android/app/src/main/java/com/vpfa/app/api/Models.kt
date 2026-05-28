@@ -76,6 +76,24 @@ data class UpcomingSubscription(
     @SerializedName("zi_plata") val ziPlata: Int
 )
 
+data class Subscription(
+    val id: Int,
+    val nume: String,
+    val suma: Double,
+    val categorie: String,
+    @SerializedName("zi_plata") val ziPlata: Int,
+    val activa: Boolean,
+    @SerializedName("user_id") val userId: Int
+)
+
+data class SubscriptionCreateRequest(
+    val nume: String,
+    val suma: Double,
+    val categorie: String,
+    @SerializedName("zi_plata") val ziPlata: Int,
+    val activa: Boolean = true
+)
+
 // ML & Forecast DTOs
 data class HistoricalPoint(
     val data: String,

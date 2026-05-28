@@ -55,6 +55,15 @@ interface ApiService {
     @GET("api/transactions/subscriptions/upcoming")
     suspend fun getUpcomingSubscriptions(): List<UpcomingSubscription>
 
+    @GET("api/transactions/subscriptions")
+    suspend fun getSubscriptions(): List<Subscription>
+
+    @POST("api/transactions/subscriptions")
+    suspend fun createSubscription(@Body request: SubscriptionCreateRequest): Subscription
+
+    @DELETE("api/transactions/subscriptions/{id}")
+    suspend fun deleteSubscription(@Path("id") id: Int)
+
     // --- MACHINE LEARNING ---
     @GET("api/ml/forecast")
     suspend fun getForecast(): ForecastResponse

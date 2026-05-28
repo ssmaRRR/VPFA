@@ -336,12 +336,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
       )}
 
       {/* Secțiune Grafice și Tranzacții Recente */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '2fr 1fr',
-        gap: '25px',
-        alignItems: 'stretch'
-      }}>
+      <div className="grid-2-1">
         {/* Coloana Stângă: Grafice */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '25px', height: '100%' }}>
           {/* Grafic Evoluție */}
@@ -437,9 +432,9 @@ export default function Dashboard({ user, onAddTransactionNav }) {
         </div>
 
         {/* Coloana Dreaptă: Tranzacții Recente */}
-        <div style={{ position: 'relative' }}>
+        <div className="dashboard-tx-card-wrapper">
           {/* Tranzacții Recente */}
-          <Card title="Tranzacții Recente" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column' }}>
+          <Card title="Tranzacții Recente" className="dashboard-tx-card">
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1, minHeight: 0 }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', flex: 1, minHeight: 0, overflowY: 'auto' }}>
                 {recentTransactions.length > 0 ? (

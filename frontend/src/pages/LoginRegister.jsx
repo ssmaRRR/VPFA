@@ -170,7 +170,7 @@ export default function LoginRegister({ onAuthSuccess }) {
 
           {!isLogin && (
             <>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+              <div className="grid-2-col">
                 <div className="form-group">
                   <label className="form-label">Vârstă</label>
                   <input
@@ -196,7 +196,7 @@ export default function LoginRegister({ onAuthSuccess }) {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+              <div className="grid-2-col">
                 <div className="form-group">
                   <label className="form-label">Toleranță Risc</label>
                   <CustomSelect
