@@ -445,7 +445,7 @@ export default function Transactions() {
                   <button type="submit" className="btn btn-secondary">Caută</button>
                 </form>
 
-                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+                <div className="transactions-filters-wrapper">
                   {/* Filtru Tip */}
                   <CustomSelect
                     value={tipFilter}

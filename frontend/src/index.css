@@ -507,6 +507,31 @@ select.input-field:focus {
   to { opacity: 1; }
 }
 
+/* Responsive adjustments for select dropdowns & cards */
+.transactions-filters-wrapper {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Fix Recharts default legend overlapping and spacing */
+.recharts-default-legend {
+  line-height: 1.5 !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  gap: 8px 14px !important;
+  margin-top: 15px !important;
+  padding: 0 !important;
+}
+
+.recharts-legend-item {
+  display: inline-flex !important;
+  align-items: center !important;
+  margin-right: 0 !important;
+}
+
 @media (max-width: 1024px) {
   .grid-2-1, .grid-3-2, .grid-1-2, .grid-1-1-2 {
     grid-template-columns: 1fr;
@@ -568,12 +593,28 @@ select.input-field:focus {
   .app-layout {
     flex-direction: column;
   }
+
+  .glass-card {
+    padding: 16px !important;
+  }
 }
 
 @media (max-width: 480px) {
   .grid-2-col {
     grid-template-columns: 1fr;
     gap: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .transactions-filters-wrapper {
+    width: 100% !important;
+    flex-wrap: nowrap !important;
+  }
+  .transactions-filters-wrapper > .custom-select-container {
+    flex: 1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
   }
 }
 
