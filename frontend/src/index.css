@@ -958,6 +958,10 @@ select.input-field:focus {
     padding-left: 0;
     padding-top: 20px;
   }
+  /* Ascunde legenda graficelor pe mobil */
+  .recharts-legend-wrapper {
+    display: none !important;
+  }
 }
 
 /* Tooltip info cluster K-Means */

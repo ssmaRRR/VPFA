@@ -206,15 +206,26 @@ export function ForecastChart({ historicalData, forecastData }) {
 
 export function PortfolioAllocationChart({ data }) {
   const [isMobile, setIsMobile] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
+
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    const mediaQuery = window.matchMedia('(max-width: 950px)');
+    const handleResize = () => setIsMobile(mediaQuery.matches);
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleResize);
+      return () => mediaQuery.removeEventListener('change', handleResize);
+    } else {
+      mediaQuery.addListener(handleResize);
+      return () => mediaQuery.removeListener(handleResize);
+    }
   }, []);
 
+  const totalValue = data.reduce((sum, item) => sum + item.valoare_estimata, 0);
+
   return (
-    <div style={{ width: '100%', height: 350, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div style={{ position: 'relative', width: '100%', height: 350, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
@@ -225,9 +236,25 @@ export function PortfolioAllocationChart({ data }) {
             outerRadius={isMobile ? 82 : 75}
             paddingAngle={5}
             dataKey="procent"
+            onMouseEnter={(data, index) => setActiveIndex(index)}
+            onMouseLeave={() => setActiveIndex(-1)}
+            onClick={(data, index) => {
+              if (activeIndex === index) {
+                setActiveIndex(-1);
+              } else {
+                setActiveIndex(index);
+              }
+            }}
           >
             {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+              <Cell 
+                key={`cell-${index}`} 
+                fill={PIE_COLORS[index % PIE_COLORS.length]} 
+                opacity={activeIndex === -1 || activeIndex === index ? 1 : 0.6}
+                stroke={activeIndex === index ? '#fff' : 'rgba(255,255,255,0.05)'}
+                strokeWidth={activeIndex === index ? 2 : 1}
+                style={{ cursor: 'pointer', outline: 'none', transition: 'all 0.2s ease' }}
+              />
             ))}
           </Pie>
           <Tooltip content={<PieCustomTooltip />} />
@@ -243,6 +270,70 @@ export function PortfolioAllocationChart({ data }) {
           )}
         </PieChart>
       </ResponsiveContainer>
+
+      {/* Text în centrul donut chart-ului */}
+      <div style={{
+        position: 'absolute',
+        top: isMobile ? '50%' : '40%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        textAlign: 'center',
+        pointerEvents: 'none',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: isMobile ? '95px' : '100px',
+        height: isMobile ? '95px' : '100px',
+        borderRadius: '50%',
+        zIndex: 5
+      }}>
+        <span style={{ 
+          fontSize: isMobile ? '0.7rem' : '0.75rem', 
+          color: activeIndex !== -1 ? PIE_COLORS[activeIndex % PIE_COLORS.length] : 'var(--text-secondary)',
+          fontWeight: '700',
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em',
+          display: 'block',
+          width: '100%',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap'
+        }}>
+          {activeIndex !== -1 ? data[activeIndex].clasa_active : 'Active'}
+        </span>
+        <span style={{ 
+          fontSize: isMobile ? '0.95rem' : '1.05rem', 
+          color: 'var(--text-primary)',
+          fontWeight: '800',
+          marginTop: '2px',
+          display: 'block',
+          width: '100%',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis'
+        }}>
+          {activeIndex !== -1 
+            ? `${data[activeIndex].procent}%`
+            : '100%'
+          }
+        </span>
+        {totalValue > 0 && (
+          <span style={{
+            fontSize: '0.7rem',
+            color: 'var(--text-muted)',
+            marginTop: '1px',
+            display: 'block',
+            width: '100%',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }}>
+            {activeIndex !== -1 
+              ? `${data[activeIndex].valoare_estimata.toLocaleString('ro-RO')} RON`
+              : `${totalValue.toLocaleString('ro-RO')} RON`
+            }
+          </span>
+        )}
+      </div>
     </div>
   );
 }
@@ -250,44 +341,73 @@ export function PortfolioAllocationChart({ data }) {
 
 export function ExpensePieChart({ data, height = 280 }) {
   const [isMobile, setIsMobile] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
+
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    const mediaQuery = window.matchMedia('(max-width: 950px)');
+    const handleResize = () => setIsMobile(mediaQuery.matches);
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleResize);
+      return () => mediaQuery.removeEventListener('change', handleResize);
+    } else {
+      mediaQuery.addListener(handleResize);
+      return () => mediaQuery.removeListener(handleResize);
+    }
   }, []);
 
+  const totalSum = data.reduce((sum, item) => sum + item.value, 0);
+
   return (
-    <div style={{ width: '100%', height, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div style={{ position: 'relative', width: '100%', height, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
             data={data}
             cx="50%"
             cy={isMobile ? "50%" : "38%"}
-            innerRadius={isMobile ? 45 : (height < 280 ? 38 : 55)}
-            outerRadius={isMobile ? 70 : (height < 280 ? 58 : 82)}
+            innerRadius={isMobile ? 50 : (height < 280 ? 40 : 55)}
+            outerRadius={isMobile ? 75 : (height < 280 ? 60 : 82)}
             paddingAngle={4}
             dataKey="value"
+            onMouseEnter={(data, index) => setActiveIndex(index)}
+            onMouseLeave={() => setActiveIndex(-1)}
+            onClick={(data, index) => {
+              if (activeIndex === index) {
+                setActiveIndex(-1);
+              } else {
+                setActiveIndex(index);
+              }
+            }}
           >
             {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+              <Cell 
+                key={`cell-${index}`} 
+                fill={PIE_COLORS[index % PIE_COLORS.length]} 
+                opacity={activeIndex === -1 || activeIndex === index ? 1 : 0.6}
+                stroke={activeIndex === index ? '#fff' : 'rgba(255,255,255,0.05)'}
+                strokeWidth={activeIndex === index ? 2 : 1}
+                style={{ cursor: 'pointer', outline: 'none', transition: 'all 0.2s ease' }}
+              />
             ))}
           </Pie>
           <Tooltip content={({ active, payload }) => {
             if (active && payload && payload.length) {
               const item = payload[0].payload;
               return (
-                <div style={{
+                <div className="custom-chart-tooltip" style={{
                   background: 'rgba(15, 12, 38, 0.9)',
                   border: '1px solid rgba(197, 227, 132, 0.3)',
                   padding: '8px 12px',
                   borderRadius: '8px',
+                  backdropFilter: 'blur(8px)',
                   color: '#fff',
                   fontSize: '0.85rem'
                 }}>
                   <p style={{ margin: 0, fontWeight: 'bold', color: payload[0].color }}>{item.name}</p>
                   <p style={{ margin: '3px 0 0 0' }}>Sumă: <strong>{item.value.toLocaleString('ro-RO')} RON</strong></p>
+                  <p style={{ margin: '3px 0 0 0' }}>Pondere: <strong>{totalSum > 0 ? ((item.value / totalSum) * 100).toFixed(1) : 0}%</strong></p>
                 </div>
               );
             }
@@ -305,6 +425,67 @@ export function ExpensePieChart({ data, height = 280 }) {
           )}
         </PieChart>
       </ResponsiveContainer>
+
+      {/* Text în centrul donut chart-ului */}
+      <div style={{
+        position: 'absolute',
+        top: isMobile ? '50%' : '38%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        textAlign: 'center',
+        pointerEvents: 'none',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: isMobile ? '90px' : '100px',
+        height: isMobile ? '90px' : '100px',
+        borderRadius: '50%',
+        zIndex: 5
+      }}>
+        <span style={{ 
+          fontSize: isMobile ? '0.7rem' : '0.75rem', 
+          color: activeIndex !== -1 ? PIE_COLORS[activeIndex % PIE_COLORS.length] : 'var(--text-secondary)',
+          fontWeight: '700',
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em',
+          display: 'block',
+          width: '100%',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap'
+        }}>
+          {activeIndex !== -1 ? data[activeIndex].name : 'Total'}
+        </span>
+        <span style={{ 
+          fontSize: isMobile ? '0.9rem' : '0.95rem', 
+          color: 'var(--text-primary)',
+          fontWeight: '800',
+          marginTop: '2px',
+          display: 'block',
+          width: '100%',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis'
+        }}>
+          {activeIndex !== -1 
+            ? `${data[activeIndex].value.toLocaleString('ro-RO')} RON`
+            : `${totalSum.toLocaleString('ro-RO')} RON`
+          }
+        </span>
+        {totalSum > 0 && (
+          <span style={{
+            fontSize: '0.7rem',
+            color: 'var(--text-muted)',
+            marginTop: '1px',
+            display: 'block'
+          }}>
+            {activeIndex !== -1 
+              ? `${((data[activeIndex].value / totalSum) * 100).toFixed(1)}%`
+              : '100%'
+            }
+          </span>
+        )}
+      </div>
     </div>
   );
 }
