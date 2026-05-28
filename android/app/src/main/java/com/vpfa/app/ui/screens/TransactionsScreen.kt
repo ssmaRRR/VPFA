@@ -296,7 +296,7 @@ fun TransactionsScreen(
                                         text = when (selectedTip) {
                                             "venit" -> "Venituri"
                                             "cheltuiala" -> "Cheltuieli"
-                                            else -> "Toate Tipurile"
+                                            else -> "Tipurile"
                                         },
                                         color = TextSecondary,
                                         fontSize = 12.sp,
@@ -310,7 +310,7 @@ fun TransactionsScreen(
                                     modifier = Modifier.background(BgSidebar).border(1.dp, BorderColor)
                                 ) {
                                     DropdownMenuItem(
-                                        text = { Text("Toate Tipurile", color = TextPrimary) },
+                                        text = { Text("Tipurile", color = TextPrimary) },
                                         onClick = {
                                             selectedTip = ""
                                             typeMenuExpanded = false
@@ -346,7 +346,7 @@ fun TransactionsScreen(
                                         modifier = Modifier.fillMaxWidth()
                                     ) {
                                         Text(
-                                            text = selectedCat.ifEmpty { "Toate Categoriile" },
+                                            text = selectedCat.ifEmpty { "Categoriile" },
                                             color = TextSecondary,
                                             fontSize = 12.sp,
                                             maxLines = 1,
@@ -359,7 +359,7 @@ fun TransactionsScreen(
                                         modifier = Modifier.background(BgSidebar).border(1.dp, BorderColor)
                                     ) {
                                         DropdownMenuItem(
-                                            text = { Text("Toate Categoriile", color = TextPrimary) },
+                                            text = { Text("Categoriile", color = TextPrimary) },
                                             onClick = {
                                                 selectedCat = ""
                                                 catMenuExpanded = false

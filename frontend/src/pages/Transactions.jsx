@@ -456,7 +456,7 @@ export default function Transactions() {
                       }
                     }}
                     options={[
-                      { value: '', label: 'Toate Tipurile' },
+                      { value: '', label: 'Tipurile' },
                       { value: 'venit', label: 'Venituri' },
                       { value: 'cheltuiala', label: 'Cheltuieli' }
                     ]}
@@ -469,7 +469,7 @@ export default function Transactions() {
                       value={catFilter}
                       onChange={(e) => setCatFilter(e.target.value)}
                       options={[
-                        { value: '', label: 'Toate Categoriile' },
+                        { value: '', label: 'Categoriile' },
                         ...CATEGORII.map(c => ({ value: c, label: c }))
                       ]}
                       style={{ width: '170px' }}

@@ -212,9 +212,9 @@ export function PortfolioAllocationChart({ data }) {
           <Pie
             data={data}
             cx="50%"
-            cy="50%"
-            innerRadius={60}
-            outerRadius={90}
+            cy="38%"
+            innerRadius={50}
+            outerRadius={75}
             paddingAngle={5}
             dataKey="procent"
           >
@@ -246,9 +246,9 @@ export function ExpensePieChart({ data, height = 280 }) {
           <Pie
             data={data}
             cx="50%"
-            cy="50%"
-            innerRadius={height < 280 ? 45 : 55}
-            outerRadius={height < 280 ? 70 : 82}
+            cy="38%"
+            innerRadius={height < 280 ? 38 : 55}
+            outerRadius={height < 280 ? 58 : 82}
             paddingAngle={4}
             dataKey="value"
           >
