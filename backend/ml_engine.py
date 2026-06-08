@@ -330,7 +330,12 @@ def cluster_investment_profile(user: models.User) -> Dict[str, Any]:
                 {"clasa_active": "Obligațiuni de Stat (Tezaur/Fidelis)", "procent": 30.0},
                 {"clasa_active": "Acțiuni Globale (ETF diversificat)", "procent": 10.0}
             ],
-            "recomandare_detaliata": "Îți recomandăm să direcționezi majoritatea banilor către depozite la termen care oferă dobânzi garantate sau titluri de stat FIDELIS/TEZAUR emise de Ministerul Finanțelor Publice (venituri neimpozitabile). O mică parte (10%) poate fi expusă pe burse prin ETF-uri cu acumulare care urmăresc un indice global precum MSCI World pentru a asigura o creștere minimă pe termen lung."
+            "recomandare_detaliata": (
+                "Îți recomandăm să direcționezi banii astfel:\n"
+                "• 60% (Depozite Bancare / Cont de Economii): Oferă dobânzi garantate, acces facil la fonduri și risc zero.\n"
+                "• 30% (Obligațiuni de Stat): Titluri de stat FIDELIS/TEZAUR emise de Ministerul Finanțelor Publice (cu venituri neimpozitabile).\n"
+                "• 10% (Acțiuni Globale): Expunere redusă pe bursa globală prin ETF-uri cu acumulare care urmăresc un indice mare (ex: MSCI World) pentru a combate inflația."
+            )
         },
         1: {
             "nume": "Portofoliu Moderat (Echilibru și Creștere Treptată)",
@@ -341,7 +346,13 @@ def cluster_investment_profile(user: models.User) -> Dict[str, Any]:
                 {"clasa_active": "Imobiliare (Fonduri REIT sau active fizice)", "procent": 20.0},
                 {"clasa_active": "Lichidități / Depozite", "procent": 10.0}
             ],
-            "recomandare_detaliata": "Îți recomandăm o alocare echilibrată: 45% în ETF-uri care urmăresc indici mari de acțiuni (ex: S&P 500 sau Vanguard FTSE All-World) pentru randamente bune pe termen lung; 25% în instrumente cu venit fix (obligațiuni corporative de înaltă calitate sau titluri de stat) ca plasă de siguranță; și 20% în REIT-uri imobiliare (Real Estate Investment Trusts) pentru dividende constante. Păstrează 10% în conturi de economii cu acces instant pentru urgențe."
+            "recomandare_detaliata": (
+                "Îți recomandăm o alocare echilibrată a fondurilor:\n"
+                "• 45% (ETF-uri Acțiuni Globale): Urmăresc indici mari (ex: S&P 500 sau Vanguard FTSE All-World) pentru randamente bune pe termen lung.\n"
+                "• 25% (Obligațiuni / Titluri de Stat): Instrumente cu venit fix (obligațiuni corporative de înaltă calitate sau titluri de stat) ca plasă de siguranță.\n"
+                "• 20% (Imobiliare): REIT-uri imobiliare (Real Estate Investment Trusts) pentru dividende constante și diversificare.\n"
+                "• 10% (Lichidități / Depozite): Conturi de economii cu acces instant pentru urgențe și oportunități."
+            )
         },
         2: {
             "nume": "Portofoliu Agresiv (Maximizarea Creșterii pe Termen Lung)",
@@ -352,7 +363,13 @@ def cluster_investment_profile(user: models.User) -> Dict[str, Any]:
                 {"clasa_active": "Criptoactive & Active Alternative", "procent": 5.0},
                 {"clasa_active": "Obligațiuni / Titluri de Stat", "procent": 10.0}
             ],
-            "recomandare_detaliata": "Având în vedere profilul de risc crescut sau tinerețea/veniturile tale, poți adopta o strategie orientată spre acumulare intensă. Alocă 70% în acțiuni dinamice (cum ar fi ETF-urile pe Nasdaq-100, S&P 500 sau acțiuni individuale tech de tip blue-chip). Completează cu 15% în REIT-uri de creștere și o expunere speculativă de 5% pe criptomonede mari (Bitcoin/Ethereum) sau start-up-uri. Menține 10% în obligațiuni de stat lichide doar pentru a putea rebalansa portofoliul în caz de scăderi masive la bursă."
+            "recomandare_detaliata": (
+                "Având în vedere profilul de risc crescut, poți adopta o strategie orientată spre acumulare intensă:\n"
+                "• 70% (Acțiuni Dinamice & Tehnologie): ETF-uri axate pe tehnologie sau acțiuni individuale de tip blue-chip (ex: Nasdaq-100, S&P 500) pentru acumulare.\n"
+                "• 15% (Imobiliare / REIT-uri): REIT-uri imobiliare orientate spre creștere pentru a adăuga active tangibile în portofoliu.\n"
+                "• 5% (Criptoactive & Speculativ): Expunere limitată în criptomonede majore (Bitcoin/Ethereum) sau start-up-uri cu potențial ridicat.\n"
+                "• 10% (Obligațiuni / Titluri de Stat): Rezerve de siguranță sub formă de obligațiuni lichide, utilizate exclusiv pentru rebalansare în caz de corecții masive."
+            )
         }
     }
     

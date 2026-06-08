@@ -5,7 +5,7 @@ import TransactionRow from '../components/TransactionRow';
 import { TrendChart, ExpensePieChart } from '../components/AnalyticsChart';
 import { 
   TrendingUp, TrendingDown, Landmark, Percent, AlertOctagon, 
-  RefreshCw, ShieldAlert, Sparkles, PlusCircle, Calendar 
+  RefreshCw, ShieldAlert, Sparkles, PlusCircle, Calendar, Trash2 
 } from 'lucide-react';
 
 export default function Dashboard({ user, onAddTransactionNav }) {
@@ -108,6 +108,22 @@ export default function Dashboard({ user, onAddTransactionNav }) {
     }
   };
 
+  const handleResetData = async () => {
+    if (window.confirm('Ești sigur că vrei să resetezi toate datele? Această acțiune va șterge permanent toate tranzacțiile și abonamentele tale.')) {
+      setActionLoading(true);
+      setMessage({ text: '', type: '' });
+      try {
+        const res = await api.resetData();
+        setMessage({ text: res.message, type: 'success' });
+        await fetchData();
+      } catch (err) {
+        setMessage({ text: err.message || 'Resetarea datelor a eșuat.', type: 'error' });
+      } finally {
+        setActionLoading(false);
+      }
+    }
+  };
+
   if (loading && !summary) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
@@ -163,6 +179,16 @@ export default function Dashboard({ user, onAddTransactionNav }) {
           >
             <ShieldAlert size={16} />
             Rulează Model ML Anomalii
+          </button>
+
+          <button 
+            className="btn btn-danger" 
+            onClick={handleResetData} 
+            disabled={actionLoading}
+            title="Șterge toate tranzacțiile și datele salvate"
+          >
+            <Trash2 size={16} />
+            Resetare Date
           </button>
         </div>
       </div>

@@ -42,12 +42,31 @@
 /* =====================================================================
    RESETARE ȘI STILURI GLOBALE
    ===================================================================== */
+/* Scrollbar modern premium pentru browsere Webkit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(197, 227, 132, 0.15);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(197, 227, 132, 0.4);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
   scrollbar-width: thin;
-  scrollbar-color: var(--primary) var(--bg-main);
+  scrollbar-color: rgba(197, 227, 132, 0.2) transparent;
 }
 
 body {

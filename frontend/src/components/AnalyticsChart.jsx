@@ -346,9 +346,8 @@ export function ForecastChart({ historicalData, forecastData }) {
   );
 }
 
-export function PortfolioAllocationChart({ data }) {
+export function PortfolioAllocationChart({ data, activeIndex = -1, setActiveIndex = () => {} }) {
   const [isMobile, setIsMobile] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(-1);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(max-width: 950px)');
@@ -373,7 +372,7 @@ export function PortfolioAllocationChart({ data }) {
           <Pie
             data={data}
             cx="50%"
-            cy={isMobile ? "50%" : "44%"}
+            cy="50%"
             innerRadius={isMobile ? 72 : 62}
             outerRadius={isMobile ? 100 : 88}
             paddingAngle={5}
@@ -400,23 +399,13 @@ export function PortfolioAllocationChart({ data }) {
             ))}
           </Pie>
           <Tooltip content={<PieCustomTooltip />} wrapperStyle={{ zIndex: 1000 }} isAnimationActive={false} />
-          {!isMobile && (
-            <Legend 
-              verticalAlign="bottom" 
-              iconType="circle"
-              formatter={(value, entry, index) => {
-                const item = data[index];
-                return <span style={{ color: 'var(--text-primary)', fontSize: '0.78rem' }}>{item.clasa_active} ({item.procent}%)</span>;
-              }}
-            />
-          )}
         </PieChart>
       </ResponsiveContainer>
 
       {/* Text în centrul donut chart-ului */}
       <div style={{
         position: 'absolute',
-        top: isMobile ? '50%' : '44%',
+        top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
         textAlign: 'center',
@@ -431,50 +420,71 @@ export function PortfolioAllocationChart({ data }) {
         zIndex: 5,
         lineHeight: 1.1
       }}>
-        <span style={{ 
-          fontSize: isMobile ? '0.7rem' : '0.75rem', 
-          color: activeIndex !== -1 ? PIE_COLORS[activeIndex % PIE_COLORS.length] : 'var(--text-secondary)',
-          fontWeight: '700',
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-          display: 'block',
-          width: '100%',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap'
-        }}>
-          {activeIndex !== -1 ? data[activeIndex].clasa_active : 'Active'}
-        </span>
-        <span style={{ 
-          fontSize: isMobile ? '0.95rem' : '1.05rem', 
-          color: 'var(--text-primary)',
-          fontWeight: '800',
-          marginTop: '2px',
-          display: 'block',
-          width: '100%',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis'
-        }}>
-          {activeIndex !== -1 
-            ? `${data[activeIndex].procent}%`
-            : '100%'
-          }
-        </span>
-        {totalValue > 0 && (
-          <span style={{
-            fontSize: '0.7rem',
-            color: 'var(--text-muted)',
-            marginTop: '1px',
-            display: 'block',
-            width: '100%',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis'
-          }}>
-            {activeIndex !== -1 
-              ? `${data[activeIndex].valoare_estimata.toLocaleString('ro-RO')} RON`
-              : `${totalValue.toLocaleString('ro-RO')} RON`
-            }
-          </span>
+        {activeIndex !== -1 ? (
+          <>
+            <span style={{ 
+              fontSize: isMobile ? '0.7rem' : '0.75rem', 
+              color: PIE_COLORS[activeIndex % PIE_COLORS.length],
+              fontWeight: '700',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+              display: 'block',
+              width: '100%',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap'
+            }}>
+              {data[activeIndex].clasa_active}
+            </span>
+            <span style={{ 
+              fontSize: isMobile ? '1.1rem' : '1.25rem', 
+              color: 'var(--text-primary)',
+              fontWeight: '800',
+              marginTop: '4px',
+              display: 'block',
+              width: '100%',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}>
+              {data[activeIndex].procent}%
+            </span>
+            <span style={{
+              fontSize: '0.75rem',
+              color: 'var(--text-muted)',
+              marginTop: '4px',
+              display: 'block',
+              width: '100%',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}>
+              {data[activeIndex].valoare_estimata.toLocaleString('ro-RO')} RON
+            </span>
+          </>
+        ) : (
+          <>
+            <span style={{ 
+              fontSize: isMobile ? '1.15rem' : '1.3rem', 
+              color: 'var(--text-primary)',
+              fontWeight: '800',
+              display: 'block',
+              width: '100%',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}>
+              {totalValue.toLocaleString('ro-RO')} RON
+            </span>
+            <span style={{
+              fontSize: '0.75rem',
+              color: 'var(--text-muted)',
+              marginTop: '4px',
+              display: 'block',
+              width: '100%',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}>
+              Total Investiție
+            </span>
+          </>
         )}
       </div>
     </div>

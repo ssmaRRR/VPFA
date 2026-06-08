@@ -140,6 +140,12 @@ export const api = {
     });
   },
 
+  async resetData() {
+    return this.request('/transactions/reset', {
+      method: 'POST'
+    });
+  },
+
   async importCSV(file) {
     const formData = new FormData();
     formData.append('file', file);

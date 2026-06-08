@@ -382,6 +382,31 @@ def sync_mock_bank_data(
     return {"message": "Sincronizare reușită! 30 de tranzacții mock au fost adăugate, inclusiv 2 anomalii de cheltuieli."}
 
 
+@router.post("/reset", status_code=status.HTTP_200_OK)
+def reset_user_data(
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Șterge toate tranzacțiile și abonamentele utilizatorului curent
+    și resetează profilul ML de clustering la starea inițială.
+    """
+    # Ștergem tranzacțiile
+    db.query(models.Transaction).filter(models.Transaction.user_id == current_user.id).delete()
+    
+    # Ștergem abonamentele
+    db.query(models.Subscription).filter(models.Subscription.user_id == current_user.id).delete()
+    
+    # Resetăm cluster-ul și profilul ML
+    current_user.cluster_ml = None
+    current_user.profil_investitional = None
+    db.add(current_user)
+    
+    db.commit()
+    
+    return {"message": "Toate datele financiare au fost resetate cu succes."}
+
+
 @router.post("/import-csv")
 def import_csv_transactions(
     file: UploadFile = File(...),
