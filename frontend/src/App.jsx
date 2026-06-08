@@ -95,7 +95,9 @@ function App() {
           />
         )}
         {currentPage === 'transactions' && <Transactions />}
-        {currentPage === 'health' && <FinancialHealth />}
+        {currentPage === 'health' && (
+          <FinancialHealth onNavigateToTransactions={() => setCurrentPage('transactions')} />
+        )}
         {currentPage === 'investments' && (
           <Investments onUserUpdate={(updatedUser) => setUser(updatedUser)} />
         )}

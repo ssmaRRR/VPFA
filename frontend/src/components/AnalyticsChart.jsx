@@ -274,6 +274,29 @@ export function ForecastChart({ historicalData, forecastData }) {
     ...forecastData.map(f => ({ data: f.data, sold_istoric: null, sold_prognozat: f.sold_estimat }))
   ];
 
+  const formatChartDate = (dateStr) => {
+    if (!dateStr) return '';
+    try {
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return dateStr;
+      const day = date.getDate();
+      const monthNames = ["Ian", "Feb", "Mar", "Apr", "Mai", "Iun", "Iul", "Aug", "Sep", "Oct", "Noi", "Dec"];
+      return `${day} ${monthNames[date.getMonth()]}`;
+    } catch (e) {
+      return dateStr;
+    }
+  };
+
+  const formatYAxisVal = (val) => {
+    if (val >= 1000000) {
+      return val % 1000000 === 0 ? `${val / 1000000}M` : `${(val / 1000000).toFixed(1)}M`;
+    }
+    if (val >= 1000) {
+      return val % 1000 === 0 ? `${val / 1000}k` : `${(val / 1000).toFixed(1)}k`;
+    }
+    return val;
+  };
+
   return (
     <div style={{ width: '100%', height: 320 }}>
       <ResponsiveContainer>
@@ -292,8 +315,21 @@ export function ForecastChart({ historicalData, forecastData }) {
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" />
-          <XAxis dataKey="data" stroke="#8e8680" fontSize={11} tickLine={false} />
-          <YAxis stroke="#8e8680" fontSize={11} tickLine={false} axisLine={false} />
+          <XAxis 
+            dataKey="data" 
+            stroke="#8e8680" 
+            fontSize={11} 
+            tickLine={false} 
+            tickFormatter={formatChartDate}
+            minTickGap={45}
+          />
+          <YAxis 
+            stroke="#8e8680" 
+            fontSize={11} 
+            tickLine={false} 
+            axisLine={false} 
+            tickFormatter={formatYAxisVal}
+          />
           
           <Tooltip content={({ active, payload, label }) => {
             if (active && payload && payload.length) {
@@ -308,7 +344,7 @@ export function ForecastChart({ historicalData, forecastData }) {
                   color: '#fff',
                   fontSize: '0.85rem'
                 }}>
-                  <p style={{ margin: 0, fontWeight: 'bold' }}>{label}</p>
+                  <p style={{ margin: 0, fontWeight: 'bold' }}>{formatChartDate(label)}</p>
                   <p style={{ margin: '5px 0 0 0', color: payload[0].color }}>
                     {name}: <strong>{val.toFixed(2)} RON</strong>
                   </p>
