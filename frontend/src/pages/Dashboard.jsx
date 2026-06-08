@@ -552,7 +552,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
                       gap: '10px',
                       maxHeight: '250px',
                       overflowY: 'auto',
-                      paddingRight: '5px'
+                      padding: '6px 8px 6px 6px'
                     }}>
                       {getExpensesByCategory().map((item, index) => {
                         const totalSum = getExpensesByCategory().reduce((sum, i) => sum + i.value, 0);
