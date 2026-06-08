@@ -49,6 +49,22 @@ export default function TransactionRow({ transaction, onDelete }) {
         </div>
 
         <div className="tx-amount-and-actions">
+          {este_anomala && (
+            <span 
+              title={`Alertă ML (Anomalie): ${anomalie_detalii}`}
+              style={{
+                color: 'var(--warning)',
+                fontSize: '1.05rem',
+                marginRight: '6px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                cursor: 'help',
+                animation: 'pulse 2s infinite'
+              }}
+            >
+              ❗️
+            </span>
+          )}
           <span className={`tx-amount ${tip === 'venit' ? 'amount-income' : 'amount-expense'}`}>
             {tip === 'venit' ? '+' : '-'} {suma.toFixed(2)} RON
           </span>

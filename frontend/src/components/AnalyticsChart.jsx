@@ -5,7 +5,7 @@ import {
 } from 'recharts';
 
 // Paleta de culori pentru activele de investiții
-const PIE_COLORS = ['#c5e384', '#a8e6cf', '#ebd5c7', '#ffb347', '#8e8680', '#5cdb95'];
+export const PIE_COLORS = ['#c5e384', '#a8e6cf', '#ebd5c7', '#ffb347', '#8e8680', '#5cdb95'];
 
 // Tooltip personalizat stilizat ca glassmorphism
 const CustomTooltip = ({ active, payload, label }) => {
@@ -528,9 +528,12 @@ export function PortfolioAllocationChart({ data, activeIndex = -1, setActiveInde
 }
 
 
-export function ExpensePieChart({ data, height = 280 }) {
+export function ExpensePieChart({ data, height = 280, activeIndex: externalActiveIndex, setActiveIndex: externalSetActiveIndex }) {
   const [isMobile, setIsMobile] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(-1);
+  const [internalActiveIndex, setInternalActiveIndex] = useState(-1);
+
+  const activeIndex = externalActiveIndex !== undefined ? externalActiveIndex : internalActiveIndex;
+  const setActiveIndex = externalSetActiveIndex !== undefined ? externalSetActiveIndex : setInternalActiveIndex;
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(max-width: 950px)');
@@ -556,7 +559,7 @@ export function ExpensePieChart({ data, height = 280 }) {
           <Pie
             data={data}
             cx="50%"
-            cy={isMobile ? "50%" : "44%"}
+            cy="50%"
             innerRadius={isMobile ? 72 : 62}
             outerRadius={isMobile ? 100 : 88}
             paddingAngle={4}
@@ -607,23 +610,13 @@ export function ExpensePieChart({ data, height = 280 }) {
               return null;
             }} 
           />
-          {!isMobile && (
-            <Legend 
-              verticalAlign="bottom" 
-              iconType="circle"
-              formatter={(value, entry, index) => {
-                const item = data[index];
-                return <span style={{ color: 'var(--text-primary)', fontSize: '0.78rem' }}>{item.name} ({item.value.toLocaleString('ro-RO')} RON)</span>;
-              }}
-            />
-          )}
         </PieChart>
       </ResponsiveContainer>
 
       {/* Text în centrul donut chart-ului */}
       <div style={{
         position: 'absolute',
-        top: isMobile ? '50%' : '44%',
+        top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
         textAlign: 'center',
@@ -650,10 +643,10 @@ export function ExpensePieChart({ data, height = 280 }) {
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap'
         }}>
-          {activeIndex !== -1 ? data[activeIndex].name : 'Total'}
+          {activeIndex !== -1 ? data[activeIndex].name : ''}
         </span>
         <span style={{ 
-          fontSize: isMobile ? '0.9rem' : '0.95rem', 
+          fontSize: isMobile ? '0.95rem' : '1.1rem', 
           color: 'var(--text-primary)',
           fontWeight: '800',
           marginTop: '2px',
@@ -667,19 +660,17 @@ export function ExpensePieChart({ data, height = 280 }) {
             : `${totalSum.toLocaleString('ro-RO')} RON`
           }
         </span>
-        {totalSum > 0 && (
-          <span style={{
-            fontSize: '0.7rem',
-            color: 'var(--text-muted)',
-            marginTop: '1px',
-            display: 'block'
-          }}>
-            {activeIndex !== -1 
-              ? `${((data[activeIndex].value / totalSum) * 100).toFixed(1)}%`
-              : '100%'
-            }
-          </span>
-        )}
+        <span style={{
+          fontSize: '0.7rem',
+          color: 'var(--text-muted)',
+          marginTop: '1px',
+          display: 'block'
+        }}>
+          {activeIndex !== -1 
+            ? `${totalSum > 0 ? ((data[activeIndex].value / totalSum) * 100).toFixed(1) : 0}%`
+            : 'Total Cheltuieli'
+          }
+        </span>
       </div>
     </div>
   );

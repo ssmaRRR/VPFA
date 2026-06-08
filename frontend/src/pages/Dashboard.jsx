@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../api';
 import Card from '../components/Card';
 import TransactionRow from '../components/TransactionRow';
-import { TrendChart, ExpensePieChart } from '../components/AnalyticsChart';
+import { TrendChart, ExpensePieChart, PIE_COLORS } from '../components/AnalyticsChart';
+import CustomSelect from '../components/CustomSelect';
 import { 
   TrendingUp, TrendingDown, Landmark, Percent, AlertOctagon, 
   RefreshCw, ShieldAlert, Sparkles, PlusCircle, Calendar, Trash2 
@@ -19,15 +20,122 @@ export default function Dashboard({ user, onAddTransactionNav }) {
   const [actionLoading, setActionLoading] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
 
+  // Stări noi pentru optimizările UI/UX
+  const [hoveredCategoryIndex, setHoveredCategoryIndex] = useState(-1);
+  const [activeTimeframe, setActiveTimeframe] = useState('3L');
+  const [perioadaSelectata, setPerioadaSelectata] = useState('luna_curenta');
+
   const getExpensesByCategory = () => {
     const expenses = allTransactions.filter(tx => tx.tip === 'cheltuiala');
     const categoriesMap = {};
     expenses.forEach(tx => {
       categoriesMap[tx.categorie] = (categoriesMap[tx.categorie] || 0) + tx.suma;
     });
-    return Object.entries(categoriesMap).map(([name, value]) => ({
-      name,
-      value: Math.round(value * 100) / 100
+    return Object.entries(categoriesMap)
+      .map(([name, value]) => ({
+        name,
+        value: Math.round(value * 100) / 100
+      }))
+      .sort((a, b) => b.value - a.value);
+  };
+
+  const getTrendDataForTimeframe = (timeframe) => {
+    if (!allTransactions || allTransactions.length === 0) {
+      return trends;
+    }
+
+    const today = new Date();
+    let startDate = new Date();
+    let intervalDays = 1;
+    let formatLabel = (date) => date.toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' });
+    let pointsCount = 7;
+
+    if (timeframe === '1S') {
+      startDate.setDate(today.getDate() - 6);
+      pointsCount = 7;
+      intervalDays = 1;
+      formatLabel = (date) => date.toLocaleDateString('ro-RO', { weekday: 'short', day: 'numeric' });
+    } else if (timeframe === '1L') {
+      startDate.setDate(today.getDate() - 29);
+      pointsCount = 30;
+      intervalDays = 1;
+      formatLabel = (date) => date.toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' });
+    } else if (timeframe === '3L') {
+      startDate.setDate(today.getDate() - 89);
+      pointsCount = 12; // 12 săptămâni
+      intervalDays = 7;
+      formatLabel = (date) => date.toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' });
+    } else if (timeframe === '1A') {
+      const months = [];
+      for (let i = 11; i >= 0; i--) {
+        const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+        months.push({
+          dateKey: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`,
+          label: d.toLocaleDateString('ro-RO', { month: 'short', year: 'numeric' }),
+          venituri: 0,
+          cheltuieli: 0
+        });
+      }
+      
+      allTransactions.forEach(tx => {
+        const txDate = new Date(tx.data);
+        const txKey = `${txDate.getFullYear()}-${String(txDate.getMonth() + 1).padStart(2, '0')}`;
+        const monthPoint = months.find(m => m.dateKey === txKey);
+        if (monthPoint) {
+          if (tx.tip === 'venit') {
+            monthPoint.venituri += tx.suma;
+          } else {
+            monthPoint.cheltuieli += tx.suma;
+          }
+        }
+      });
+      
+      return months.map(m => ({
+        luna: m.label,
+        venituri: Math.round(m.venituri * 100) / 100,
+        cheltuieli: Math.round(m.cheltuieli * 100) / 100
+      }));
+    } else {
+      return trends;
+    }
+
+    const dataPoints = [];
+    let current = new Date(startDate);
+    current.setHours(0, 0, 0, 0);
+    
+    for (let i = 0; i < pointsCount; i++) {
+      const nextDate = new Date(current);
+      nextDate.setDate(current.getDate() + intervalDays);
+      
+      dataPoints.push({
+        start: new Date(current),
+        end: nextDate,
+        label: formatLabel(current),
+        venituri: 0,
+        cheltuieli: 0
+      });
+      
+      current = nextDate;
+    }
+
+    allTransactions.forEach(tx => {
+      const txDate = new Date(tx.data);
+      for (let point of dataPoints) {
+        if (txDate >= point.start && txDate < point.end) {
+          if (tx.tip === 'venit') {
+            point.venituri += tx.suma;
+          } else {
+            point.cheltuieli += tx.suma;
+          }
+          break;
+        }
+      }
+    });
+
+    return dataPoints.map(p => ({
+      luna: p.label,
+      venituri: Math.round(p.venituri * 100) / 100,
+      cheltuieli: Math.round(p.cheltuieli * 100) / 100
     }));
   };
 
@@ -155,12 +263,25 @@ export default function Dashboard({ user, onAddTransactionNav }) {
           <h1 className="gradient-text" style={{ fontSize: '2.2rem', fontWeight: '800' }}>
             Panou Principal
           </h1>
-          <p style={{ color: 'var(--text-secondary)' }}>
-            Bun venit, <strong style={{ color: 'var(--text-primary)' }}>{user.nume}</strong>! Aici este starea finanțelor tale.
-          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap', marginTop: '6px' }}>
+            <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
+              Bun venit, <strong style={{ color: 'var(--text-primary)' }}>{user.nume}</strong>! Aici este starea finanțelor tale.
+            </p>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', width: '220px', flexShrink: 0 }}>
+              <CustomSelect
+                value={perioadaSelectata}
+                onChange={(e) => setPerioadaSelectata(e.target.value)}
+                options={[
+                  { value: 'luna_curenta', label: 'Luna curentă (Iunie 2026)' },
+                  { value: 'ultimele_30', label: 'Ultimele 30 de zile' },
+                  { value: 'ultimele_90', label: 'Ultimele 90 de zile' }
+                ]}
+              />
+            </div>
+          </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           <button 
             className="btn btn-secondary" 
             onClick={handleSyncMock} 
@@ -168,7 +289,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
             title="Sincronizează date bancare mock pentru demo"
           >
             <RefreshCw size={16} className={actionLoading ? 'anim-spin' : ''} />
-            Simulează Sincronizare
+            Sincronizează cu banca
           </button>
           
           <button 
@@ -178,7 +299,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
             title="Analizează tranzacțiile pentru anomalii folosind Isolation Forest"
           >
             <ShieldAlert size={16} />
-            Rulează Model ML Anomalii
+            Caută anomalii
           </button>
 
           <button 
@@ -251,7 +372,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
               <Landmark size={24} />
             </div>
             <div>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Sold Curent</span>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Balanță Lunară</span>
               <h2 style={{ fontSize: '1.6rem', fontWeight: '700' }} className="glow-text">
                 {summary.sold_curent.toLocaleString('ro-RO')} RON
               </h2>
@@ -366,12 +487,37 @@ export default function Dashboard({ user, onAddTransactionNav }) {
         {/* Coloana Stângă: Grafice */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '25px', height: '100%' }}>
           {/* Grafic Evoluție */}
-          <Card title="Evoluție Venituri vs Cheltuieli">
-            {trends.length > 0 ? (
-              <TrendChart data={trends} />
+          <Card title={
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', width: '100%' }}>
+              <span>Evoluție Venituri vs Cheltuieli</span>
+              <div style={{ display: 'flex', gap: '5px' }}>
+                {['1S', '1L', '3L', '1A'].map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => setActiveTimeframe(p)}
+                    style={{
+                      background: activeTimeframe === p ? 'var(--primary)' : 'rgba(255, 255, 255, 0.04)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: '6px',
+                      color: activeTimeframe === p ? '#0e0907' : 'var(--text-secondary)',
+                      padding: '4px 10px',
+                      fontSize: '0.78rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'var(--transition-smooth)'
+                    }}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+            </div>
+          }>
+            {allTransactions.length > 0 ? (
+              <TrendChart data={getTrendDataForTimeframe(activeTimeframe)} />
             ) : (
               <div style={{ textAlign: 'center', padding: '50px 0', color: 'var(--text-secondary)' }}>
-                Apasă pe butonul "Simulează Sincronizare" pentru a vizualiza graficul evoluției tale financiare.
+                Apasă pe butonul "Sincronizează cu banca" pentru a vizualiza graficul evoluției tale financiare.
               </div>
             )}
           </Card>
@@ -379,10 +525,92 @@ export default function Dashboard({ user, onAddTransactionNav }) {
           {/* Grafic Distribuție Cheltuieli pe Categorii & Plăți Recurente */}
           <Card title="Distribuția Cheltuielilor & Plăți Recurente" style={{ display: 'flex', flexDirection: 'column' }}>
             <div className="dashboard-combined-grid">
-              {/* Partea Stângă: Donut Chart (2.2/3) */}
+              {/* Partea Stângă: Donut Chart + Legendă Interactivă (2.2/3) */}
               <div>
                 {allTransactions.filter(tx => tx.tip === 'cheltuiala').length > 0 ? (
-                  <ExpensePieChart data={getExpensesByCategory()} height={280} />
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '30px',
+                    flexWrap: 'wrap',
+                    justifyContent: 'center'
+                  }}>
+                    <div style={{ flex: '1 1 200px', maxWidth: '240px' }}>
+                      <ExpensePieChart 
+                        data={getExpensesByCategory()} 
+                        height={250} 
+                        activeIndex={hoveredCategoryIndex}
+                        setActiveIndex={setHoveredCategoryIndex}
+                      />
+                    </div>
+                    
+                    {/* Legendă tabelară verticală interactivă */}
+                    <div style={{ 
+                      flex: '1.2 1 240px', 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      gap: '10px',
+                      maxHeight: '250px',
+                      overflowY: 'auto',
+                      paddingRight: '5px'
+                    }}>
+                      {getExpensesByCategory().map((item, index) => {
+                        const totalSum = getExpensesByCategory().reduce((sum, i) => sum + i.value, 0);
+                        const percent = totalSum > 0 ? ((item.value / totalSum) * 100).toFixed(1) : 0;
+                        const isHovered = hoveredCategoryIndex === index;
+                        
+                        return (
+                          <div 
+                            key={index}
+                            onMouseEnter={() => setHoveredCategoryIndex(index)}
+                            onMouseLeave={() => setHoveredCategoryIndex(-1)}
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              padding: '10px 12px',
+                              borderRadius: '8px',
+                              background: isHovered ? 'rgba(197, 227, 132, 0.08)' : 'rgba(255, 255, 255, 0.02)',
+                              border: isHovered ? '1px solid rgba(197, 227, 132, 0.4)' : '1px solid var(--border-color)',
+                              transform: isHovered ? 'scale(1.015)' : 'scale(1)',
+                              boxShadow: isHovered ? '0 4px 12px rgba(0,0,0,0.2)' : 'none',
+                              transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                              <div style={{
+                                width: '10px',
+                                height: '10px',
+                                borderRadius: '50%',
+                                flexShrink: 0,
+                                background: PIE_COLORS[index % PIE_COLORS.length]
+                              }}></div>
+                              <span style={{ 
+                                fontSize: '0.85rem', 
+                                fontWeight: '550', 
+                                color: isHovered ? 'var(--text-primary)' : 'var(--text-secondary)',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap'
+                              }}>
+                                {item.name}
+                              </span>
+                            </div>
+                            
+                            <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                              <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)' }}>
+                                {item.value.toLocaleString('ro-RO')} RON
+                              </strong>
+                              <span style={{ fontSize: '0.72rem', color: isHovered ? 'var(--primary)' : 'var(--text-muted)' }}>
+                                {percent}%
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 ) : (
                   <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
                     Nu există cheltuieli înregistrate pentru a afișa distribuția pe categorii.
