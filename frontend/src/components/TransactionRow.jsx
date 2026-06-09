@@ -79,7 +79,7 @@ export default function TransactionRow({ transaction, onDelete, onResolveAnomaly
       </div>
 
       {este_anomala && (
-        <div className="anomaly-alert-banner" style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-start' }}>
+        <div className="anomaly-alert-banner">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <AlertTriangle size={15} style={{ flexShrink: 0 }} />
             <span><strong>Alertă ML (Anomalie):</strong> {anomalie_detalii}</span>
