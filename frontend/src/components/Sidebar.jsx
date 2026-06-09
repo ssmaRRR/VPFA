@@ -1,5 +1,4 @@
-import React from 'react';
-import { LayoutDashboard, ArrowRightLeft, LineChart, PieChart, LogOut, Wallet, X } from 'lucide-react';
+import { LayoutDashboard, ArrowRightLeft, LineChart, PieChart, LogOut, Wallet, X, Landmark } from 'lucide-react';
 
 export default function Sidebar({ currentPage, setCurrentPage, onLogout, user, isOpen, onClose }) {
   const menuItems = [
@@ -7,6 +6,7 @@ export default function Sidebar({ currentPage, setCurrentPage, onLogout, user, i
     { id: 'transactions', label: 'Tranzacții', icon: ArrowRightLeft },
     { id: 'health', label: 'Sănătate Predictivă', icon: LineChart },
     { id: 'investments', label: 'Sugestii Investiții', icon: PieChart },
+    { id: 'connections', label: 'Conectare Bănci', icon: Landmark },
   ];
 
   return (

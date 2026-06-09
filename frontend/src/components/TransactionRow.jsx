@@ -25,6 +25,20 @@ export default function TransactionRow({ transaction, onDelete, onResolveAnomaly
         return <Landmark size={13} style={{ marginRight: '4px' }} title="Sincronizare Bancară" />;
       case 'Revolut Sandbox API':
         return <Landmark size={13} style={{ marginRight: '4px', color: 'var(--primary)' }} title="Revolut Sandbox API" />;
+      case 'Banca Transilvania Sandbox':
+        return <Landmark size={13} style={{ marginRight: '4px', color: '#ff9f43' }} title="Banca Transilvania Sandbox" />;
+      case 'BCR Sandbox':
+        return <Landmark size={13} style={{ marginRight: '4px', color: '#0082c8' }} title="BCR Sandbox" />;
+      case 'ING Bank Sandbox':
+        return <Landmark size={13} style={{ marginRight: '4px', color: '#ff793f' }} title="ING Bank Sandbox" />;
+      case 'BRD Sandbox':
+        return <Landmark size={13} style={{ marginRight: '4px', color: '#ff4d4d' }} title="BRD Sandbox" />;
+      case 'Raiffeisen Bank Sandbox':
+        return <Landmark size={13} style={{ marginRight: '4px', color: '#ffd32a' }} title="Raiffeisen Bank Sandbox" />;
+      case 'CEC Bank Sandbox':
+        return <Landmark size={13} style={{ marginRight: '4px', color: '#05c46b' }} title="CEC Bank Sandbox" />;
+      case 'UniCredit Bank Sandbox':
+        return <Landmark size={13} style={{ marginRight: '4px', color: '#eb3b5a' }} title="UniCredit Bank Sandbox" />;
       default:
         return <User size={13} style={{ marginRight: '4px' }} title="Adăugată manual" />;
     }

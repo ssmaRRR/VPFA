@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Transactions from './pages/Transactions';
 import FinancialHealth from './pages/FinancialHealth';
 import Investments from './pages/Investments';
+import Connections from './pages/Connections';
 import { Menu, Wallet } from 'lucide-react';
 
 function App() {
@@ -101,6 +102,7 @@ function App() {
         {currentPage === 'investments' && (
           <Investments onUserUpdate={(updatedUser) => setUser(updatedUser)} />
         )}
+        {currentPage === 'connections' && <Connections />}
       </main>
     </div>
   );

@@ -65,6 +65,13 @@ class RevolutSyncRequest(BaseModel):
     otp: str
 
 
+class BankSyncRequest(BaseModel):
+    bank_id: str
+    client_id: str
+    client_secret: str
+    otp: str
+
+
 # =====================================================================
 # Scheme de Raportare și Rezumat
 # =====================================================================

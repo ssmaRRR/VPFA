@@ -151,6 +151,24 @@ export const api = {
     });
   },
 
+  async syncBankSandbox(bankId, clientId, clientSecret, otp) {
+    return this.request('/transactions/bank-sandbox/sync', {
+      method: 'POST',
+      body: {
+        bank_id: bankId,
+        client_id: clientId,
+        client_secret: clientSecret,
+        otp: otp
+      }
+    });
+  },
+
+  async disconnectBankSandbox(bankId) {
+    return this.request(`/transactions/bank-sandbox/disconnect/${bankId}`, {
+      method: 'DELETE'
+    });
+  },
+
   async resetData() {
     return this.request('/transactions/reset', {
       method: 'POST'

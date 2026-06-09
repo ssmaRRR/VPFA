@@ -810,6 +810,224 @@ def sync_revolut_sandbox(
     }
 
 
+BANK_MAPPING = {
+    "bt": {"name": "Banca Transilvania Sandbox", "display": "Banca Transilvania"},
+    "bcr": {"name": "BCR Sandbox", "display": "BCR"},
+    "brd": {"name": "BRD Sandbox", "display": "BRD"},
+    "ing": {"name": "ING Bank Sandbox", "display": "ING Bank"},
+    "raiffeisen": {"name": "Raiffeisen Bank Sandbox", "display": "Raiffeisen Bank"},
+    "cec": {"name": "CEC Bank Sandbox", "display": "CEC Bank"},
+    "unicredit": {"name": "UniCredit Bank Sandbox", "display": "UniCredit Bank"},
+    "revolut": {"name": "Revolut Sandbox API", "display": "Revolut"}
+}
+
+
+@router.post("/bank-sandbox/sync", status_code=status.HTTP_201_CREATED)
+def sync_bank_sandbox(
+    request: schemas.BankSyncRequest,
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Simulează sincronizarea cu o bancă din Open Banking Sandbox, descărcând
+    tranzacții personalizate pe brandul băncii și rulând ML Isolation Forest.
+    """
+    if request.otp != "123456":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cod OTP incorect în Sandbox. Folosește codul 123456 pentru test."
+        )
+
+    bank_info = BANK_MAPPING.get(request.bank_id)
+    if not bank_info:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Bancă nesuportată în sistemul Open Banking Sandbox."
+        )
+
+    sursa_name = bank_info["name"]
+    display_name = bank_info["display"]
+
+    # Ștergem tranzacțiile existente ale utilizatorului cu această sursă pentru a nu le dubla
+    db.query(models.Transaction).filter(
+        models.Transaction.user_id == current_user.id,
+        models.Transaction.sursa == sursa_name
+    ).delete()
+
+    today = datetime.datetime.now()
+
+    # Generăm 15 tranzacții personalizate pe specificul băncii
+    revolut_data = []
+
+    if request.bank_id == "bt":
+        revolut_data = [
+            {"id": "bt_tx_1", "reference": "Salariu SC Transilvania IT SRL", "amount": 6400.0, "desc": "Salariu lunar BT24"},
+            {"id": "bt_tx_2", "reference": "Plata chirie apartament", "amount": -1900.0, "desc": "Chirie apartament Cluj"},
+            {"id": "bt_tx_3", "reference": "Plata POS Mega Image", "amount": -85.5, "desc": "Mega Image Marasti"},
+            {"id": "bt_tx_4", "reference": "Plata POS Lidl", "amount": -130.2, "desc": "Lidl Gheorgheni"},
+            {"id": "bt_tx_5", "reference": "Plata POS Dedeman Cluj", "amount": -4800.0, "desc": "Dedeman - Achizitie Materiale"},
+            {"id": "bt_tx_6", "reference": "Transfer BT24 - Popescu Vlad", "amount": -800.0, "desc": "Schimb valutar / Transfer"},
+            {"id": "bt_tx_7", "reference": "Plata POS Uber ridesharing", "amount": -32.0, "desc": "Uber Cursa Centru"},
+            {"id": "bt_tx_8", "reference": "Plata POS Bolt ridesharing", "amount": -22.0, "desc": "Bolt Cursa Cluj"},
+            {"id": "bt_tx_9", "reference": "Factura curent electric Enel", "amount": -160.0, "desc": "E.ON Energie"},
+            {"id": "bt_tx_10", "reference": "Factura Digi Net & Mobil", "amount": -75.0, "desc": "Digi Romania BT Pay"},
+            {"id": "bt_tx_11", "reference": "Servicii consultanta Web Design", "amount": 1800.0, "desc": "Freelancing BT"},
+            {"id": "bt_tx_12", "reference": "Plata POS Farmacia Tei", "amount": -110.0, "desc": "Farmacia Tei Cluj"},
+            {"id": "bt_tx_13", "reference": "Netflix Subscription", "amount": -65.0, "desc": "Netflix.com"},
+            {"id": "bt_tx_14", "reference": "Cumparaturi Panemar", "amount": -35.0, "desc": "Panemar Cluj POS"},
+            {"id": "bt_tx_15", "reference": "Catering eveniment BT Cafe", "amount": -1450.0, "desc": "BT Cafe aniversare"}
+        ]
+    elif request.bank_id == "ing":
+        revolut_data = [
+            {"id": "ing_tx_1", "reference": "Salariu ING-Dutch Software", "amount": 6700.0, "desc": "Home'Bank Salary"},
+            {"id": "ing_tx_2", "reference": "Plata chirie apartament", "amount": -1750.0, "desc": "ING Direct Rent"},
+            {"id": "ing_tx_3", "reference": "Plata POS Mega Image", "amount": -145.2, "desc": "Mega Image Bucuresti"},
+            {"id": "ing_tx_4", "reference": "Plata POS Lidl", "amount": -195.0, "desc": "Lidl Pipera"},
+            {"id": "ing_tx_5", "reference": "Plata POS ING Pay - Starbucks", "amount": -24.0, "desc": "Starbucks Pipera"},
+            {"id": "ing_tx_6", "reference": "Transfer cont tranzactionare Tradeville", "amount": -900.0, "desc": "ING Home'Bank Tradeville"},
+            {"id": "ing_tx_7", "reference": "Plata POS Uber ridesharing", "amount": -42.0, "desc": "Uber Bucharest"},
+            {"id": "ing_tx_8", "reference": "Plata POS Bolt ridesharing", "amount": -31.0, "desc": "Bolt Cursa OTP"},
+            {"id": "ing_tx_9", "reference": "Factura curent electric Enel", "amount": -140.0, "desc": "Enel Energie Muntenia"},
+            {"id": "ing_tx_10", "reference": "Factura Digi Net & Mobil", "amount": -85.0, "desc": "RCS-RDS SA"},
+            {"id": "ing_tx_11", "reference": "Servicii consultanta Web Design", "amount": 1600.0, "desc": "Freelance Home'Bank"},
+            {"id": "ing_tx_12", "reference": "Plata POS Farmacia Tei", "amount": -85.0, "desc": "Farmacia Tei Dristor"},
+            {"id": "ing_tx_13", "reference": "Abonament Netflix Amsterdam", "amount": -65.0, "desc": "Netflix.com Amsterdam"},
+            {"id": "ing_tx_14", "reference": "Plata POS Altex Electro casnice", "amount": -4500.0, "desc": "Altex Romania - Achizitie Monitor Gaming"},
+            {"id": "ing_tx_15", "reference": "Catering aniversare restaurant", "amount": -1450.0, "desc": "Restaurant Tazz ING Pay"}
+        ]
+    elif request.bank_id == "bcr":
+        revolut_data = [
+            {"id": "bcr_tx_1", "reference": "Salariu SC George Tech SRL", "amount": 6100.0, "desc": "George Salary"},
+            {"id": "bcr_tx_2", "reference": "Plata chirie apartament", "amount": -1850.0, "desc": "George Rent Payment"},
+            {"id": "bcr_tx_3", "reference": "Plata POS Mega Image", "amount": -95.0, "desc": "Mega Image POS George"},
+            {"id": "bcr_tx_4", "reference": "Plata POS Kaufland", "amount": -310.5, "desc": "Kaufland Bucuresti"},
+            {"id": "bcr_tx_5", "reference": "Plata POS Altex Romania", "amount": -4500.0, "desc": "Altex Romania - Achizitie Monitor Gaming"},
+            {"id": "bcr_tx_6", "reference": "Transfer George - Enel", "amount": -145.0, "desc": "George Utility Transfer"},
+            {"id": "bcr_tx_7", "reference": "Plata POS Uber ridesharing", "amount": -36.0, "desc": "Uber Bucharest"},
+            {"id": "bcr_tx_8", "reference": "Plata POS Bolt ridesharing", "amount": -26.0, "desc": "Bolt Cursa George"},
+            {"id": "bcr_tx_9", "reference": "Factura Digi Net & Mobil", "amount": -85.0, "desc": "George Digi Net"},
+            {"id": "bcr_tx_10", "reference": "Transfer BCR George - Intretinere", "amount": -350.0, "desc": "Asociatie de proprietari"},
+            {"id": "bcr_tx_11", "reference": "Servicii consultanta Web Design", "amount": 1400.0, "desc": "Freelance George"},
+            {"id": "bcr_tx_12", "reference": "Plata POS Farmacia Tei", "amount": -95.0, "desc": "Farmacia Tei George"},
+            {"id": "bcr_tx_13", "reference": "Netflix Subscription", "amount": -65.0, "desc": "Netflix George"},
+            {"id": "bcr_tx_14", "reference": "Plata POS Restaurant George", "amount": -120.0, "desc": "George Pay Restaurant"},
+            {"id": "bcr_tx_15", "reference": "Catering eveniment privat & restaurant aniversare", "amount": -1450.0, "desc": "Catering George"}
+        ]
+    else:
+        # Generare generică
+        revolut_data = [
+            {"id": "gen_tx_1", "reference": f"Salariu lunar SC {display_name} SRL", "amount": 6200.0, "desc": "Salariu lunar"},
+            {"id": "gen_tx_2", "reference": "Plata chirie apartament", "amount": -1800.0, "desc": "Chirie apartament"},
+            {"id": "gen_tx_3", "reference": "Plata POS Mega Image", "amount": -120.5, "desc": "Mega Image"},
+            {"id": "gen_tx_4", "reference": "Plata POS Lidl", "amount": -240.2, "desc": "Lidl POS"},
+            {"id": "gen_tx_5", "reference": "Plata POS Altex", "amount": -4500.0, "desc": "Altex Romania - Achizitie Monitor Gaming"},
+            {"id": "gen_tx_6", "reference": "Transfer cont tranzactionare Tradeville", "amount": -800.0, "desc": "Tradeville ETF"},
+            {"id": "gen_tx_7", "reference": "Plata POS Uber ridesharing", "amount": -35.0, "desc": "Uber Cursa"},
+            {"id": "gen_tx_8", "reference": "Plata POS Bolt ridesharing", "amount": -28.0, "desc": "Bolt Cursa"},
+            {"id": "gen_tx_9", "reference": "Factura curent electric Enel", "amount": -150.0, "desc": "Enel"},
+            {"id": "gen_tx_10", "reference": "Factura Digi Net & Mobil", "amount": -85.0, "desc": "Digi Mobil"},
+            {"id": "gen_tx_11", "reference": "Servicii consultanta Web Design", "amount": 1500.0, "desc": "Freelance Design"},
+            {"id": "gen_tx_12", "reference": "Plata POS Farmacia Tei", "amount": -95.0, "desc": "Farmacia Tei"},
+            {"id": "gen_tx_13", "reference": "Netflix Subscription", "amount": -65.0, "desc": "Netflix"},
+            {"id": "gen_tx_14", "reference": "Plata POS Restaurant Tazz", "amount": -130.0, "desc": "Tazz Food"},
+            {"id": "gen_tx_15", "reference": "Catering aniversare restaurant", "amount": -1450.0, "desc": "Restaurant aniversare"}
+        ]
+
+    txs_to_create = []
+    for index, r_tx in enumerate(revolut_data):
+        valoare_raw = r_tx["amount"]
+        tip = "venit" if valoare_raw > 0 else "cheltuiala"
+        suma = abs(valoare_raw)
+        descriere = r_tx["reference"]
+        data_final = today - datetime.timedelta(days=index + 1)
+        
+        desc_lower = descriere.lower()
+        if "salariu" in desc_lower or "web design" in desc_lower or "freelancing" in desc_lower:
+            categorie = "Salariu" if tip == "venit" else "Altele"
+        elif "chirie" in desc_lower:
+            categorie = "Chirie"
+        elif "mega image" in desc_lower or "lidl" in desc_lower or "kaufland" in desc_lower or "panemar" in desc_lower or "restaurant" in desc_lower or "catering" in desc_lower:
+            categorie = "Mâncare"
+        elif "enel" in desc_lower or "digi" in desc_lower or "e.on" in desc_lower or "intretinere" in desc_lower:
+            categorie = "Utilități"
+        elif "uber" in desc_lower or "bolt" in desc_lower:
+            categorie = "Transport"
+        elif "altex" in desc_lower or "netflix" in desc_lower or "dedeman" in desc_lower or "starbucks" in desc_lower:
+            categorie = "Divertisment"
+        elif "tei" in desc_lower or "farmacia" in desc_lower:
+            categorie = "Sănătate"
+        elif "tradeville" in desc_lower:
+            categorie = "Investiții"
+        else:
+            categorie = "Altele"
+
+        db_tx = models.Transaction(
+            user_id=current_user.id,
+            suma=suma,
+            categorie=categorie,
+            tip=tip,
+            descriere=descriere,
+            data=data_final,
+            sursa=sursa_name
+        )
+        txs_to_create.append(db_tx)
+
+    db.add_all(txs_to_create)
+    db.commit()
+
+    user_txs = db.query(models.Transaction).filter(models.Transaction.user_id == current_user.id).all()
+    anomaly_results = ml_engine.detect_anomalies(user_txs)
+    
+    anomalies_count = 0
+    for tx_id, is_anom, details in anomaly_results:
+        db.query(models.Transaction).filter(models.Transaction.id == tx_id).update({
+            "este_anomala": is_anom,
+            "anomalie_detalii": details
+        })
+        if is_anom:
+            tx_obj = db.query(models.Transaction).filter(models.Transaction.id == tx_id).first()
+            if tx_obj and tx_obj.sursa == sursa_name and tx_obj.tip == "cheltuiala":
+                anomalies_count += 1
+                
+    db.commit()
+
+    return {
+        "status": "success",
+        "count": len(revolut_data),
+        "anomalies_detected": anomalies_count,
+        "message": f"Sincronizare cu {display_name} Sandbox reușită! {len(revolut_data)} tranzacții au fost importate, dintre care {anomalies_count} anomalii de cheltuieli."
+    }
+
+
+@router.delete("/bank-sandbox/disconnect/{bank_id}", status_code=status.HTTP_200_OK)
+def disconnect_bank_sandbox(
+    bank_id: str,
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Deconectează o bancă din Sandbox prin ștergerea tuturor tranzacțiilor
+    sincronizate pentru acea sursă bancară specifică.
+    """
+    bank_info = BANK_MAPPING.get(bank_id)
+    if not bank_info:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Bancă nesuportată în sistemul Open Banking Sandbox."
+        )
+
+    sursa_name = bank_info["name"]
+
+    db.query(models.Transaction).filter(
+        models.Transaction.user_id == current_user.id,
+        models.Transaction.sursa == sursa_name
+    ).delete()
+    
+    db.commit()
+    
+    return {"message": f"Contul {bank_info['display']} a fost deconectat, iar tranzacțiile sale au fost șterse."}
+
+
 # =====================================================================
 # Rute pentru Abonamente / Plăți Recurente
 # =====================================================================
