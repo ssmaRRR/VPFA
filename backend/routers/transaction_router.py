@@ -126,7 +126,7 @@ def get_dashboard_summary(
     # Rata de economisire = (Venituri - Cheltuieli) / Venituri
     rata_eco = 0.0
     if venituri > 0:
-        rata_eco = max(0.0, (venituri - cheltuieli) / venituri) * 100
+        rata_eco = ((venituri - cheltuieli) / venituri) * 100
         
     alerte = sum(1 for t in txs if t.este_anomala and t.tip == "cheltuiala")
     
