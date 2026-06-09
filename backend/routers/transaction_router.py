@@ -489,6 +489,327 @@ def import_csv_transactions(
     return {"message": f"Import finalizat cu succes! {imported_count} tranzacții au fost adăugate din CSV."}
 
 
+@router.post("/revolut-sandbox/sync", status_code=status.HTTP_201_CREATED)
+def sync_revolut_sandbox(
+    request: schemas.RevolutSyncRequest,
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Simulează sincronizarea cu contul Revolut Sandbox, descărcând tranzacții 
+    în formatul nativ al API-ului Revolut Business Open Banking, mapându-le
+    și rulând motorul ML pentru detectarea anomaliilor.
+    """
+    if request.otp != "123456":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cod OTP incorect în Sandbox. Folosește codul 123456 pentru test."
+        )
+
+    # Ștergem tranzacțiile existente ale utilizatorului cu sursa "Revolut Sandbox API" pentru a nu le dubla
+    db.query(models.Transaction).filter(
+        models.Transaction.user_id == current_user.id,
+        models.Transaction.sursa == "Revolut Sandbox API"
+    ).delete()
+
+    today = datetime.datetime.now()
+
+    # Structura JSON simulată conform API-ului Revolut Business (Open Banking standard)
+    revolut_data = [
+        {
+            "id": "revolut_tx_1",
+            "reference": "Salariu lunar SC Tech SRL",
+            "state": "completed",
+            "created_at": (today - datetime.timedelta(days=25)).isoformat(),
+            "completed_at": (today - datetime.timedelta(days=25)).isoformat(),
+            "legs": [
+                {
+                    "amount": 6200.0,
+                    "currency": "RON",
+                    "description": "Salariu lunar",
+                    "balance": 6200.0
+                }
+            ]
+        },
+        {
+            "id": "revolut_tx_2",
+            "reference": "Plata chirie apartament",
+            "state": "completed",
+            "created_at": (today - datetime.timedelta(days=24)).isoformat(),
+            "completed_at": (today - datetime.timedelta(days=24)).isoformat(),
+            "legs": [
+                {
+                    "amount": -1800.0,
+                    "currency": "RON",
+                    "description": "Chirie apartament 2 camere",
+                    "balance": 4400.0
+                }
+            ]
+        },
+        {
+            "id": "revolut_tx_3",
+            "reference": "Plata POS Mega Image",
+            "state": "completed",
+            "created_at": (today - datetime.timedelta(days=21)).isoformat(),
+            "completed_at": (today - datetime.timedelta(days=21)).isoformat(),
+            "legs": [
+                {
+                    "amount": -120.5,
+                    "currency": "RON",
+                    "description": "Mega Image POS 12",
+                    "balance": 4279.5
+                }
+            ]
+        },
+        {
+            "id": "revolut_tx_4",
+            "reference": "Plata POS Lidl",
+            "state": "completed",
+            "created_at": (today - datetime.timedelta(days=19)).isoformat(),
+            "completed_at": (today - datetime.timedelta(days=19)).isoformat(),
+            "legs": [
+                {
+                    "amount": -240.2,
+                    "currency": "RON",
+                    "description": "Lidl Pipera",
+                    "balance": 4039.3
+                }
+            ]
+        },
+        {
+            "id": "revolut_tx_5",
+            "reference": "Plata POS Altex",
+            "state": "completed",
+            "created_at": (today - datetime.timedelta(days=15)).isoformat(),
+            "completed_at": (today - datetime.timedelta(days=15)).isoformat(),
+            "legs": [
+                {
+                    "amount": -4500.0,
+                    "currency": "RON",
+                    "description": "Altex Romania - Achizitie Monitor Gaming",
+                    "balance": -460.7
+                }
+            ]
+        },
+        {
+            "id": "revolut_tx_6",
+            "reference": "Transfer cont tranzactionare Tradeville",
+            "state": "completed",
+            "created_at": (today - datetime.timedelta(days=12)).isoformat(),
+            "completed_at": (today - datetime.timedelta(days=12)).isoformat(),
+            "legs": [
+                {
+                    "amount": -800.0,
+                    "currency": "RON",
+                    "description": "Tradeville ETF Cumparare",
+                    "balance": -1260.7
+                }
+            ]
+        },
+        {
+            "id": "revolut_tx_7",
+            "reference": "Plata POS Uber ridesharing",
+            "state": "completed",
+            "created_at": (today - datetime.timedelta(days=10)).isoformat(),
+            "completed_at": (today - datetime.timedelta(days=10)).isoformat(),
+            "legs": [
+                {
+                    "amount": -35.0,
+                    "currency": "RON",
+                    "description": "Uber Cursa Pipera",
+                    "balance": -1295.7
+                }
+            ]
+        },
+        {
+            "id": "revolut_tx_8",
+            "reference": "Plata POS Bolt ridesharing",
+            "state": "completed",
+            "created_at": (today - datetime.timedelta(days=9)).isoformat(),
+            "completed_at": (today - datetime.timedelta(days=9)).isoformat(),
+            "legs": [
+                {
+                    "amount": -28.0,
+                    "currency": "RON",
+                    "description": "Bolt Cursa Centru",
+                    "balance": -1323.7
+                }
+            ]
+        },
+        {
+            "id": "revolut_tx_9",
+            "reference": "Factura curent electric Enel",
+            "state": "completed",
+            "created_at": (today - datetime.timedelta(days=7)).isoformat(),
+            "completed_at": (today - datetime.timedelta(days=7)).isoformat(),
+            "legs": [
+                {
+                    "amount": -150.0,
+                    "currency": "RON",
+                    "description": "Enel Energie Muntenia",
+                    "balance": -1473.7
+                }
+            ]
+        },
+        {
+            "id": "revolut_tx_10",
+            "reference": "Factura Digi Net & Mobil",
+            "state": "completed",
+            "created_at": (today - datetime.timedelta(days=6)).isoformat(),
+            "completed_at": (today - datetime.timedelta(days=6)).isoformat(),
+            "legs": [
+                {
+                    "amount": -85.0,
+                    "currency": "RON",
+                    "description": "RCS & RDS SA Digi Mobil",
+                    "balance": -1558.7
+                }
+            ]
+        },
+        {
+            "id": "revolut_tx_11",
+            "reference": "Servicii consultanta Web Design",
+            "state": "completed",
+            "created_at": (today - datetime.timedelta(days=5)).isoformat(),
+            "completed_at": (today - datetime.timedelta(days=5)).isoformat(),
+            "legs": [
+                {
+                    "amount": 1500.0,
+                    "currency": "RON",
+                    "description": "Freelancing consultanta web",
+                    "balance": -58.7
+                }
+            ]
+        },
+        {
+            "id": "revolut_tx_12",
+            "reference": "Plata POS Farmacia Tei",
+            "state": "completed",
+            "created_at": (today - datetime.timedelta(days=4)).isoformat(),
+            "completed_at": (today - datetime.timedelta(days=4)).isoformat(),
+            "legs": [
+                {
+                    "amount": -95.0,
+                    "currency": "RON",
+                    "description": "Farmacia Tei Bucuresti",
+                    "balance": -153.7
+                }
+            ]
+        },
+        {
+            "id": "revolut_tx_13",
+            "reference": "Netflix Subscription",
+            "state": "completed",
+            "created_at": (today - datetime.timedelta(days=3)).isoformat(),
+            "completed_at": (today - datetime.timedelta(days=3)).isoformat(),
+            "legs": [
+                {
+                    "amount": -65.0,
+                    "currency": "RON",
+                    "description": "Netflix.com payment",
+                    "balance": -218.7
+                }
+            ]
+        },
+        {
+            "id": "revolut_tx_14",
+            "reference": "Plata POS Restaurant Tazz",
+            "state": "completed",
+            "created_at": (today - datetime.timedelta(days=2)).isoformat(),
+            "completed_at": (today - datetime.timedelta(days=2)).isoformat(),
+            "legs": [
+                {
+                    "amount": -130.0,
+                    "currency": "RON",
+                    "description": "Food Delivery Tazz",
+                    "balance": -348.7
+                }
+            ]
+        },
+        {
+            "id": "revolut_tx_15",
+            "reference": "Catering aniversare restaurant",
+            "state": "completed",
+            "created_at": (today - datetime.timedelta(days=1)).isoformat(),
+            "completed_at": (today - datetime.timedelta(days=1)).isoformat(),
+            "legs": [
+                {
+                    "amount": -1450.0,
+                    "currency": "RON",
+                    "description": "Restaurant aniversare",
+                    "balance": -1798.7
+                }
+            ]
+        }
+    ]
+
+    txs_to_create = []
+    for r_tx in revolut_data:
+        leg = r_tx["legs"][0]
+        valoare_raw = leg["amount"]
+        tip = "venit" if valoare_raw > 0 else "cheltuiala"
+        suma = abs(valoare_raw)
+        descriere = r_tx["reference"] or leg["description"] or "Tranzactie Revolut"
+        data_final = datetime.datetime.fromisoformat(r_tx["completed_at"])
+        
+        desc_lower = descriere.lower()
+        if "salariu" in desc_lower or "web design" in desc_lower or "freelancing" in desc_lower:
+            categorie = "Salariu" if tip == "venit" else "Altele"
+        elif "chirie" in desc_lower:
+            categorie = "Chirie"
+        elif "mega image" in desc_lower or "lidl" in desc_lower or "restaurant" in desc_lower or "catering" in desc_lower:
+            categorie = "Mâncare"
+        elif "enel" in desc_lower or "digi" in desc_lower:
+            categorie = "Utilități"
+        elif "uber" in desc_lower or "bolt" in desc_lower:
+            categorie = "Transport"
+        elif "altex" in desc_lower or "netflix" in desc_lower:
+            categorie = "Divertisment"
+        elif "tei" in desc_lower or "farmacia" in desc_lower:
+            categorie = "Sănătate"
+        elif "tradeville" in desc_lower:
+            categorie = "Investiții"
+        else:
+            categorie = "Altele"
+
+        db_tx = models.Transaction(
+            user_id=current_user.id,
+            suma=suma,
+            categorie=categorie,
+            tip=tip,
+            descriere=descriere,
+            data=data_final,
+            sursa="Revolut Sandbox API"
+        )
+        txs_to_create.append(db_tx)
+
+    db.add_all(txs_to_create)
+    db.commit()
+
+    user_txs = db.query(models.Transaction).filter(models.Transaction.user_id == current_user.id).all()
+    anomaly_results = ml_engine.detect_anomalies(user_txs)
+    
+    anomalies_count = 0
+    for tx_id, is_anom, details in anomaly_results:
+        db.query(models.Transaction).filter(models.Transaction.id == tx_id).update({
+            "este_anomala": is_anom,
+            "anomalie_detalii": details
+        })
+        if is_anom:
+            tx_obj = db.query(models.Transaction).filter(models.Transaction.id == tx_id).first()
+            if tx_obj and tx_obj.sursa == "Revolut Sandbox API" and tx_obj.tip == "cheltuiala":
+                anomalies_count += 1
+                
+    db.commit()
+
+    return {
+        "status": "success",
+        "count": len(revolut_data),
+        "anomalies_detected": anomalies_count,
+        "message": f"Sincronizare cu Revolut Sandbox reușită! {len(revolut_data)} tranzacții au fost importate, dintre care {anomalies_count} anomalii de cheltuieli."
+    }
+
+
 # =====================================================================
 # Rute pentru Abonamente / Plăți Recurente
 # =====================================================================

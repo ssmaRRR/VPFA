@@ -23,6 +23,8 @@ export default function TransactionRow({ transaction, onDelete, onResolveAnomaly
         return <FileSpreadsheet size={13} style={{ marginRight: '4px' }} title="Import CSV" />;
       case 'Sincronizare Bancară':
         return <Landmark size={13} style={{ marginRight: '4px' }} title="Sincronizare Bancară" />;
+      case 'Revolut Sandbox API':
+        return <Landmark size={13} style={{ marginRight: '4px', color: 'var(--primary)' }} title="Revolut Sandbox API" />;
       default:
         return <User size={13} style={{ marginRight: '4px' }} title="Adăugată manual" />;
     }

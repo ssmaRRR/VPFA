@@ -140,6 +140,17 @@ export const api = {
     });
   },
 
+  async syncRevolutSandbox(clientId, clientSecret, otp) {
+    return this.request('/transactions/revolut-sandbox/sync', {
+      method: 'POST',
+      body: {
+        client_id: clientId,
+        client_secret: clientSecret,
+        otp: otp
+      }
+    });
+  },
+
   async resetData() {
     return this.request('/transactions/reset', {
       method: 'POST'

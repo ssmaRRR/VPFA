@@ -58,6 +58,13 @@ class TransactionResponse(TransactionBase):
     class Config:
         from_attributes = True
 
+
+class RevolutSyncRequest(BaseModel):
+    client_id: str
+    client_secret: str
+    otp: str
+
+
 # =====================================================================
 # Scheme de Raportare și Rezumat
 # =====================================================================

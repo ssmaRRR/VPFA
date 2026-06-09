@@ -25,6 +25,17 @@ export default function Dashboard({ user, onAddTransactionNav }) {
   const [activeTimeframe, setActiveTimeframe] = useState('3L');
   const [perioadaSelectata, setPerioadaSelectata] = useState('luna_curenta');
 
+  // Stări pentru modalul de sincronizare Revolut Sandbox
+  const [showSyncModal, setShowSyncModal] = useState(false);
+  const [syncStep, setSyncStep] = useState(1);
+  const [selectedProvider, setSelectedProvider] = useState('revolut');
+  const [clientId, setClientId] = useState('');
+  const [clientSecret, setClientSecret] = useState('');
+  const [otpCode, setOtpCode] = useState('');
+  const [modalError, setModalError] = useState('');
+  const [syncLogs, setSyncLogs] = useState([]);
+  const [syncResultStats, setSyncResultStats] = useState({ count: 0, anomalies: 0 });
+
   const getExpensesByCategory = () => {
     const expenses = allTransactions.filter(tx => tx.tip === 'cheltuiala');
     const categoriesMap = {};
@@ -176,6 +187,46 @@ export default function Dashboard({ user, onAddTransactionNav }) {
     fetchData();
   }, []);
 
+  // Simulare efect de conexiune în curs (Pasul 4 din Wizard)
+  useEffect(() => {
+    if (syncStep === 4 && showSyncModal) {
+      setSyncLogs(["Efectuare Handshake OAuth cu serverul Revolut Sandbox..."]);
+      
+      const t1 = setTimeout(() => {
+        setSyncLogs(prev => [...prev, "Autorizare reușită! Descărcare date cont bancar..."]);
+      }, 1000);
+
+      const t2 = setTimeout(() => {
+        setSyncLogs(prev => [...prev, "Import tranzacții în baza de date locală..."]);
+      }, 2000);
+
+      const t3 = setTimeout(() => {
+        setSyncLogs(prev => [...prev, "Analiză tranzacții prin motorul inteligent ML (Isolation Forest)..."]);
+      }, 3000);
+
+      const t4 = setTimeout(async () => {
+        try {
+          const res = await api.syncRevolutSandbox(clientId, clientSecret, otpCode);
+          setSyncResultStats({
+            count: res.count,
+            anomalies: res.anomalies_detected
+          });
+          setSyncStep(5);
+        } catch (err) {
+          setModalError(err.message || 'Eroare la sincronizarea Sandbox.');
+          setSyncStep(3); // Revine la pasul OTP/Consimțământ pentru a arăta eroarea
+        }
+      }, 4000);
+
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+        clearTimeout(t3);
+        clearTimeout(t4);
+      };
+    }
+  }, [syncStep, showSyncModal]);
+
   const handleSyncMock = async () => {
     setActionLoading(true);
     setMessage({ text: '', type: '' });
@@ -284,11 +335,19 @@ export default function Dashboard({ user, onAddTransactionNav }) {
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           <button 
             className="btn btn-secondary" 
-            onClick={handleSyncMock} 
+            onClick={() => {
+              setSyncStep(1);
+              setClientId('');
+              setClientSecret('');
+              setOtpCode('');
+              setModalError('');
+              setSyncLogs([]);
+              setShowSyncModal(true);
+            }} 
             disabled={actionLoading}
-            title="Sincronizează date bancare mock pentru demo"
+            title="Conectează contul bancar prin API Sandbox"
           >
-            <RefreshCw size={16} className={actionLoading ? 'anim-spin' : ''} />
+            <RefreshCw size={16} />
             Sincronizează cu banca
           </button>
           
@@ -784,6 +843,441 @@ export default function Dashboard({ user, onAddTransactionNav }) {
                 Închide
               </button>
             </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Modal Conectare Bancă Sandbox */}
+      {showSyncModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: 'rgba(6, 5, 12, 0.75)',
+          backdropFilter: 'blur(10px)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000,
+          padding: '20px'
+        }}>
+          <Card 
+            title={
+              syncStep === 3 
+                ? "Autorizare Revolut Business Portal" 
+                : syncStep === 4 
+                  ? "Conexiune API în Curs" 
+                  : "Sincronizare API Bancar"
+            }
+            style={{ 
+              width: '100%', 
+              maxWidth: '540px', 
+              background: 'rgba(21, 15, 12, 0.95)',
+              border: syncStep === 3 ? '1px solid var(--primary)' : '1px solid var(--border-color)',
+              boxShadow: 'var(--shadow-lg)',
+              backdropFilter: 'blur(20px)',
+              position: 'relative'
+            }}
+          >
+            {/* Indicator Pași */}
+            {syncStep < 5 && (
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                marginBottom: '25px',
+                padding: '0 10px',
+                position: 'relative'
+              }}>
+                <div style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '10%',
+                  right: '10%',
+                  height: '2px',
+                  background: 'rgba(255,255,255,0.06)',
+                  zIndex: 0,
+                  transform: 'translateY(-50%)'
+                }}>
+                  <div style={{
+                    width: `${((syncStep - 1) / 3) * 100}%`,
+                    height: '100%',
+                    background: 'var(--primary)',
+                    transition: 'width 0.3s ease'
+                  }}></div>
+                </div>
+                {[1, 2, 3, 4].map(step => (
+                  <div 
+                    key={step} 
+                    style={{
+                      width: '28px',
+                      height: '28px',
+                      borderRadius: '50%',
+                      background: syncStep >= step ? 'var(--primary)' : 'rgba(255, 255, 255, 0.05)',
+                      color: syncStep >= step ? '#0e0907' : 'var(--text-secondary)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '0.85rem',
+                      fontWeight: '700',
+                      border: syncStep >= step ? '2px solid var(--primary)' : '2px solid rgba(255,255,255,0.1)',
+                      zIndex: 1,
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    {step}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Conținut Pași */}
+            {syncStep === 1 && (
+              <div>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '20px' }}>
+                  Alege furnizorul de Open Banking Sandbox pentru a testa sincronizarea tranzacțiilor:
+                </p>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '25px' }}>
+                  <div 
+                    onClick={() => setSelectedProvider('revolut')}
+                    style={{
+                      padding: '16px',
+                      borderRadius: '12px',
+                      background: selectedProvider === 'revolut' ? 'rgba(197, 227, 132, 0.06)' : 'rgba(255, 255, 255, 0.02)',
+                      border: selectedProvider === 'revolut' ? '2px solid var(--primary)' : '1px solid var(--border-color)',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '15px'
+                    }}
+                  >
+                    <div style={{
+                      background: 'rgba(197, 227, 132, 0.12)',
+                      color: 'var(--primary)',
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '8px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 'bold',
+                      fontSize: '1.2rem'
+                    }}>
+                      R
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '600' }}>Revolut Business Sandbox</h4>
+                      <p style={{ margin: '3px 0 0 0', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                        Conectare directă prin API-ul Revolut Open Banking în mod de testare.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div 
+                    style={{
+                      padding: '16px',
+                      borderRadius: '12px',
+                      background: 'rgba(255, 255, 255, 0.01)',
+                      border: '1px solid rgba(255, 255, 255, 0.04)',
+                      opacity: 0.5,
+                      cursor: 'not-allowed',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '15px'
+                    }}
+                  >
+                    <div style={{
+                      background: 'rgba(255, 255, 255, 0.04)',
+                      color: 'var(--text-muted)',
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '8px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 'bold',
+                      fontSize: '1.2rem'
+                    }}>
+                      P
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '600', color: 'var(--text-muted)' }}>Plaid Sandbox</h4>
+                        <span style={{ fontSize: '0.65rem', background: 'rgba(255,255,255,0.08)', color: 'var(--text-muted)', padding: '2px 6px', borderRadius: '4px' }}>În curând</span>
+                      </div>
+                      <p style={{ margin: '3px 0 0 0', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                        Integrare conturi bancare prin serviciul Plaid Sandbox.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+                  <button className="btn btn-secondary" onClick={() => setShowSyncModal(false)}>Închide</button>
+                  <button className="btn btn-primary" onClick={() => setSyncStep(2)}>Înainte</button>
+                </div>
+              </div>
+            )}
+
+            {syncStep === 2 && (
+              <div>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '20px' }}>
+                  Introdu credențialele tale API Sandbox generate din portalul Revolut Developer:
+                </p>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '25px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '6px' }}>Client ID</label>
+                    <input 
+                      type="text" 
+                      placeholder="Introdu Client ID Sandbox (ex: revo_client_123)"
+                      value={clientId}
+                      onChange={(e) => setClientId(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        borderRadius: '8px',
+                        background: 'rgba(255,255,255,0.03)',
+                        border: '1px solid var(--border-color)',
+                        color: 'var(--text-primary)',
+                        fontSize: '0.9rem'
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '6px' }}>Client Secret / Certificat PEM (Cheie Privată)</label>
+                    <textarea 
+                      placeholder="-----BEGIN PRIVATE KEY-----&#10;MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC6&#10;...&#10;-----END PRIVATE KEY-----"
+                      value={clientSecret}
+                      onChange={(e) => setClientSecret(e.target.value)}
+                      rows={5}
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        borderRadius: '8px',
+                        background: 'rgba(255,255,255,0.03)',
+                        border: '1px solid var(--border-color)',
+                        color: 'var(--text-primary)',
+                        fontSize: '0.8rem',
+                        fontFamily: 'monospace',
+                        resize: 'none'
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
+                  <button className="btn btn-secondary" onClick={() => setSyncStep(1)}>Înapoi</button>
+                  <button 
+                    className="btn btn-primary" 
+                    onClick={() => {
+                      setModalError('');
+                      setSyncStep(3);
+                    }}
+                    disabled={!clientId || !clientSecret}
+                  >
+                    Conectează
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {syncStep === 3 && (
+              <div>
+                {/* Simulated Portal Access Request Banner */}
+                <div style={{
+                  background: 'rgba(197, 227, 132, 0.05)',
+                  border: '1px solid rgba(197, 227, 132, 0.2)',
+                  borderRadius: '12px',
+                  padding: '15px',
+                  marginBottom: '20px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                    <div style={{
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      background: 'var(--primary)',
+                      color: '#0e0907',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 'bold',
+                      fontSize: '0.8rem'
+                    }}>R</div>
+                    <strong style={{ fontSize: '0.9rem', color: 'var(--text-primary)' }}>Revolut Business Sandbox</strong>
+                  </div>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', margin: '0 0 10px 0', lineHeight: '1.4' }}>
+                    Aplicația solicită permisiuni de citire pentru:
+                  </p>
+                  <ul style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', margin: 0, paddingLeft: '20px', lineHeight: '1.5' }}>
+                    <li>Soldurile conturilor curente</li>
+                    <li>Istoricul tranzacțiilor pe ultimele 90 de zile</li>
+                  </ul>
+                </div>
+
+                <div style={{ marginBottom: '25px' }}>
+                  <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+                    Cod OTP de Securitate
+                  </label>
+                  <input 
+                    type="text" 
+                    placeholder="Introdu codul de test OTP"
+                    value={otpCode}
+                    onChange={(e) => setOtpCode(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid var(--border-color)',
+                      color: 'var(--text-primary)',
+                      fontSize: '0.9rem',
+                      textAlign: 'center',
+                      letterSpacing: '3px',
+                      fontWeight: 'bold'
+                    }}
+                  />
+                  <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '6px' }}>
+                    * Pentru testare în modul Sandbox, introdu codul <strong>123456</strong>
+                  </span>
+                </div>
+
+                {modalError && (
+                  <div style={{
+                    background: 'rgba(255, 94, 87, 0.1)',
+                    border: '1px solid var(--warning)',
+                    color: 'var(--warning)',
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    fontSize: '0.8rem',
+                    marginBottom: '20px'
+                  }}>
+                    {modalError}
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
+                  <button className="btn btn-secondary" onClick={() => setSyncStep(2)}>Înapoi</button>
+                  <button 
+                    className="btn btn-primary" 
+                    onClick={() => {
+                      if (otpCode !== '123456') {
+                        setModalError('Cod OTP incorect în Sandbox. Introdu codul 123456.');
+                      } else {
+                        setModalError('');
+                        setSyncStep(4);
+                      }
+                    }}
+                    disabled={!otpCode}
+                  >
+                    Autorizează
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {syncStep === 4 && (
+              <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                <div className="spinner" style={{
+                  border: '4px solid rgba(197, 227, 132, 0.1)',
+                  width: '45px',
+                  height: '45px',
+                  borderRadius: '50%',
+                  borderLeftColor: 'var(--primary)',
+                  animation: 'spin 1s linear infinite',
+                  margin: '0 auto 25px auto'
+                }}></div>
+
+                <div style={{
+                  background: 'rgba(0, 0, 0, 0.3)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '10px',
+                  padding: '15px',
+                  textAlign: 'left',
+                  maxHeight: '150px',
+                  overflowY: 'auto',
+                  fontFamily: 'monospace',
+                  fontSize: '0.78rem',
+                  color: 'var(--text-secondary)'
+                }}>
+                  {syncLogs.map((log, index) => (
+                    <div key={index} style={{ marginBottom: '6px', color: index === syncLogs.length - 1 ? 'var(--primary)' : 'var(--text-muted)' }}>
+                      &gt; {log}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {syncStep === 5 && (
+              <div style={{ textAlign: 'center', padding: '15px 0' }}>
+                <div style={{
+                  width: '56px',
+                  height: '56px',
+                  borderRadius: '50%',
+                  background: 'rgba(92, 219, 149, 0.15)',
+                  color: 'var(--success)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '2rem',
+                  margin: '0 auto 20px auto'
+                }}>
+                  ✓
+                </div>
+
+                <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '10px', color: 'var(--text-primary)' }}>
+                  Sincronizare Reușită!
+                </h3>
+                
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: '1.5', marginBottom: '25px', padding: '0 20px' }}>
+                  Contul tău <strong>Revolut Business Sandbox</strong> a fost conectat și sincronizat cu succes în baza de date locală.
+                </p>
+
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '15px',
+                  background: 'rgba(255,255,255,0.02)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '10px',
+                  padding: '15px',
+                  marginBottom: '25px',
+                  textAlign: 'left'
+                }}>
+                  <div>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Tranzacții Importate</span>
+                    <strong style={{ display: 'block', fontSize: '1.2rem', color: 'var(--text-primary)', marginTop: '4px' }}>
+                      {syncResultStats.count}
+                    </strong>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Anomalii Detectate (ML)</span>
+                    <strong style={{ display: 'block', fontSize: '1.2rem', color: 'var(--warning)', marginTop: '4px' }}>
+                      {syncResultStats.anomalies}
+                    </strong>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <button 
+                    className="btn btn-primary" 
+                    onClick={() => {
+                      setShowSyncModal(false);
+                      fetchData();
+                    }}
+                    style={{ padding: '8px 30px' }}
+                  >
+                    Finalizează
+                  </button>
+                </div>
+              </div>
+            )}
           </Card>
         </div>
       )}
