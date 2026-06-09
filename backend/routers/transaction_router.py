@@ -896,559 +896,330 @@ def fetch_bank_sandbox_data(bank_id: str, client_id: str, client_secret: str, ot
 
 
 def get_bank_fallback_transactions(bank_id: str, display_name: str, today: datetime.datetime):
+    txs = []
+    
+    # 1. Venituri (Salariu / Freelancing)
+    salary_amount = 5000.0 + random.randint(5, 25) * 100.0
+    salary_date = today - datetime.timedelta(days=random.randint(20, 27))
+    
     if bank_id == "bt":
-        return [
-            {
-                "id": "bt-tx-1",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Salariu SC Transilvania IT SRL",
-                "legs": [{"leg_id": "bt-leg-1", "account_id": "bt-acc-1", "amount": 6400.0, "currency": "RON", "description": "Salariu lunar BT24"}]
-            },
-            {
-                "id": "bt-tx-2",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata chirie apartament",
-                "legs": [{"leg_id": "bt-leg-2", "account_id": "bt-acc-1", "amount": -1900.0, "currency": "RON", "description": "Chirie apartament Cluj"}]
-            },
-            {
-                "id": "bt-tx-3",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=3)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=3)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Mega Image",
-                "legs": [{"leg_id": "bt-leg-3", "account_id": "bt-acc-1", "amount": -85.5, "currency": "RON", "description": "Mega Image Marasti"}]
-            },
-            {
-                "id": "bt-tx-4",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=4)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=4)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Lidl",
-                "legs": [{"leg_id": "bt-leg-4", "account_id": "bt-acc-1", "amount": -130.2, "currency": "RON", "description": "Lidl Gheorgheni"}]
-            },
-            {
-                "id": "bt-tx-5",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=5)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=5)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Dedeman Cluj",
-                "legs": [{"leg_id": "bt-leg-5", "account_id": "bt-acc-1", "amount": -4800.0, "currency": "RON", "description": "Dedeman - Achizitie Materiale"}]
-            },
-            {
-                "id": "bt-tx-6",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=6)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=6)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Transfer BT24 - Popescu Vlad",
-                "legs": [{"leg_id": "bt-leg-6", "account_id": "bt-acc-1", "amount": -800.0, "currency": "RON", "description": "Schimb valutar / Transfer"}]
-            },
-            {
-                "id": "bt-tx-7",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Uber ridesharing",
-                "legs": [{"leg_id": "bt-leg-7", "account_id": "bt-acc-1", "amount": -32.0, "currency": "RON", "description": "Uber Cursa Centru"}]
-            },
-            {
-                "id": "bt-tx-8",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=8)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=8)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Bolt ridesharing",
-                "legs": [{"leg_id": "bt-leg-8", "account_id": "bt-acc-1", "amount": -22.0, "currency": "RON", "description": "Bolt Cursa Cluj"}]
-            },
-            {
-                "id": "bt-tx-9",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=9)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=9)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Factura curent electric Enel",
-                "legs": [{"leg_id": "bt-leg-9", "account_id": "bt-acc-1", "amount": -160.0, "currency": "RON", "description": "E.ON Energie"}]
-            },
-            {
-                "id": "bt-tx-10",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=10)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=10)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Factura Digi Net & Mobil",
-                "legs": [{"leg_id": "bt-leg-10", "account_id": "bt-acc-1", "amount": -75.0, "currency": "RON", "description": "Digi Romania BT Pay"}]
-            },
-            {
-                "id": "bt-tx-11",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=11)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=11)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Servicii consultanta Web Design",
-                "legs": [{"leg_id": "bt-leg-11", "account_id": "bt-acc-1", "amount": 1800.0, "currency": "RON", "description": "Freelancing BT"}]
-            },
-            {
-                "id": "bt-tx-12",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=12)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=12)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Farmacia Tei",
-                "legs": [{"leg_id": "bt-leg-12", "account_id": "bt-acc-1", "amount": -110.0, "currency": "RON", "description": "Farmacia Tei Cluj"}]
-            },
-            {
-                "id": "bt-tx-13",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=13)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=13)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Netflix Subscription",
-                "legs": [{"leg_id": "bt-leg-13", "account_id": "bt-acc-1", "amount": -65.0, "currency": "RON", "description": "Netflix.com"}]
-            },
-            {
-                "id": "bt-tx-14",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=14)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=14)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Cumparaturi Panemar",
-                "legs": [{"leg_id": "bt-leg-14", "account_id": "bt-acc-1", "amount": -35.0, "currency": "RON", "description": "Panemar Cluj POS"}]
-            },
-            {
-                "id": "bt-tx-15",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=15)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=15)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Catering eveniment BT Cafe",
-                "legs": [{"leg_id": "bt-leg-15", "account_id": "bt-acc-1", "amount": -1450.0, "currency": "RON", "description": "BT Cafe aniversare"}]
-            }
-        ]
+        salary_ref = "Salariu SC Transilvania IT SRL"
+        salary_desc = "Salariu lunar BT24"
     elif bank_id == "ing":
-        return [
-            {
-                "id": "ing-tx-1",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Salariu ING-Dutch Software",
-                "legs": [{"leg_id": "ing-leg-1", "account_id": "ing-acc-1", "amount": 6700.0, "currency": "RON", "description": "Home'Bank Salary"}]
-            },
-            {
-                "id": "ing-tx-2",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata chirie apartament",
-                "legs": [{"leg_id": "ing-leg-2", "account_id": "ing-acc-1", "amount": -1750.0, "currency": "RON", "description": "ING Direct Rent"}]
-            },
-            {
-                "id": "ing-tx-3",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=3)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=3)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Mega Image",
-                "legs": [{"leg_id": "ing-leg-3", "account_id": "ing-acc-1", "amount": -145.2, "currency": "RON", "description": "Mega Image Bucuresti"}]
-            },
-            {
-                "id": "ing-tx-4",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=4)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=4)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Lidl",
-                "legs": [{"leg_id": "ing-leg-4", "account_id": "ing-acc-1", "amount": -195.0, "currency": "RON", "description": "Lidl Pipera"}]
-            },
-            {
-                "id": "ing-tx-5",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=5)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=5)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS ING Pay - Starbucks",
-                "legs": [{"leg_id": "ing-leg-5", "account_id": "ing-acc-1", "amount": -24.0, "currency": "RON", "description": "Starbucks Pipera"}]
-            },
-            {
-                "id": "ing-tx-6",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=6)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=6)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Transfer cont tranzactionare Tradeville",
-                "legs": [{"leg_id": "ing-leg-6", "account_id": "ing-acc-1", "amount": -900.0, "currency": "RON", "description": "ING Home'Bank Tradeville"}]
-            },
-            {
-                "id": "ing-tx-7",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Uber ridesharing",
-                "legs": [{"leg_id": "ing-leg-7", "account_id": "ing-acc-1", "amount": -42.0, "currency": "RON", "description": "Uber Bucharest"}]
-            },
-            {
-                "id": "ing-tx-8",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=8)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=8)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Bolt ridesharing",
-                "legs": [{"leg_id": "ing-leg-8", "account_id": "ing-acc-1", "amount": -31.0, "currency": "RON", "description": "Bolt Cursa OTP"}]
-            },
-            {
-                "id": "ing-tx-9",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=9)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=9)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Factura curent electric Enel",
-                "legs": [{"leg_id": "ing-leg-9", "account_id": "ing-acc-1", "amount": -140.0, "currency": "RON", "description": "Enel Energie Muntenia"}]
-            },
-            {
-                "id": "ing-tx-10",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=10)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=10)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Factura Digi Net & Mobil",
-                "legs": [{"leg_id": "ing-leg-10", "account_id": "ing-acc-1", "amount": -85.0, "currency": "RON", "description": "RCS-RDS SA"}]
-            },
-            {
-                "id": "ing-tx-11",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=11)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=11)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Servicii consultanta Web Design",
-                "legs": [{"leg_id": "ing-leg-11", "account_id": "ing-acc-1", "amount": 1600.0, "currency": "RON", "description": "Freelance Home'Bank"}]
-            },
-            {
-                "id": "ing-tx-12",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=12)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=12)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Farmacia Tei",
-                "legs": [{"leg_id": "ing-leg-12", "account_id": "ing-acc-1", "amount": -85.0, "currency": "RON", "description": "Farmacia Tei Dristor"}]
-            },
-            {
-                "id": "ing-tx-13",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=13)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=13)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Abonament Netflix Amsterdam",
-                "legs": [{"leg_id": "ing-leg-13", "account_id": "ing-acc-1", "amount": -65.0, "currency": "RON", "description": "Netflix.com Amsterdam"}]
-            },
-            {
-                "id": "ing-tx-14",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=14)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=14)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Altex Electro casnice",
-                "legs": [{"leg_id": "ing-leg-14", "account_id": "ing-acc-1", "amount": -4500.0, "currency": "RON", "description": "Altex Romania - Achizitie Monitor Gaming"}]
-            },
-            {
-                "id": "ing-tx-15",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=15)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=15)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Catering aniversare restaurant",
-                "legs": [{"leg_id": "ing-leg-15", "account_id": "ing-acc-1", "amount": -1450.0, "currency": "RON", "description": "Restaurant Tazz ING Pay"}]
-            }
-        ]
+        salary_ref = "Salariu ING-Dutch Software"
+        salary_desc = "Home'Bank Salary"
     elif bank_id == "bcr":
-        return [
-            {
-                "id": "bcr-tx-1",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Salariu SC George Tech SRL",
-                "legs": [{"leg_id": "bcr-leg-1", "account_id": "bcr-acc-1", "amount": 6100.0, "currency": "RON", "description": "George Salary"}]
-            },
-            {
-                "id": "bcr-tx-2",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata chirie apartament",
-                "legs": [{"leg_id": "bcr-leg-2", "account_id": "bcr-acc-1", "amount": -1850.0, "currency": "RON", "description": "George Rent Payment"}]
-            },
-            {
-                "id": "bcr-tx-3",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=3)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=3)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Mega Image",
-                "legs": [{"leg_id": "bcr-leg-3", "account_id": "bcr-acc-1", "amount": -95.0, "currency": "RON", "description": "Mega Image POS George"}]
-            },
-            {
-                "id": "bcr-tx-4",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=4)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=4)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Kaufland",
-                "legs": [{"leg_id": "bcr-leg-4", "account_id": "bcr-acc-1", "amount": -310.5, "currency": "RON", "description": "Kaufland Bucuresti"}]
-            },
-            {
-                "id": "bcr-tx-5",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=5)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=5)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Altex Romania",
-                "legs": [{"leg_id": "bcr-leg-5", "account_id": "bcr-acc-1", "amount": -4500.0, "currency": "RON", "description": "Altex Romania - Achizitie Monitor Gaming"}]
-            },
-            {
-                "id": "bcr-tx-6",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=6)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=6)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Transfer George - Enel",
-                "legs": [{"leg_id": "bcr-leg-6", "account_id": "bcr-acc-1", "amount": -145.0, "currency": "RON", "description": "George Utility Transfer"}]
-            },
-            {
-                "id": "bcr-tx-7",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Uber ridesharing",
-                "legs": [{"leg_id": "bcr-leg-7", "account_id": "bcr-acc-1", "amount": -36.0, "currency": "RON", "description": "Uber Bucharest"}]
-            },
-            {
-                "id": "bcr-tx-8",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=8)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=8)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Bolt ridesharing",
-                "legs": [{"leg_id": "bcr-leg-8", "account_id": "bcr-acc-1", "amount": -26.0, "currency": "RON", "description": "Bolt Cursa George"}]
-            },
-            {
-                "id": "bcr-tx-9",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=9)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=9)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Factura Digi Net & Mobil",
-                "legs": [{"leg_id": "bcr-leg-9", "account_id": "bcr-acc-1", "amount": -85.0, "currency": "RON", "description": "George Digi Net"}]
-            },
-            {
-                "id": "bcr-tx-10",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=10)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=10)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Transfer BCR George - Intretinere",
-                "legs": [{"leg_id": "bcr-leg-10", "account_id": "bcr-acc-1", "amount": -350.0, "currency": "RON", "description": "Asociatie de proprietari"}]
-            },
-            {
-                "id": "bcr-tx-11",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=11)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=11)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Servicii consultanta Web Design",
-                "legs": [{"leg_id": "bcr-leg-11", "account_id": "bcr-acc-1", "amount": 1400.0, "currency": "RON", "description": "Freelance George"}]
-            },
-            {
-                "id": "bcr-tx-12",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=12)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=12)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Farmacia Tei",
-                "legs": [{"leg_id": "bcr-leg-12", "account_id": "bcr-acc-1", "amount": -95.0, "currency": "RON", "description": "Farmacia Tei George"}]
-            },
-            {
-                "id": "bcr-tx-13",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=13)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=13)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Netflix Subscription",
-                "legs": [{"leg_id": "bcr-leg-13", "account_id": "bcr-acc-1", "amount": -65.0, "currency": "RON", "description": "Netflix George"}]
-            },
-            {
-                "id": "bcr-tx-14",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=14)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=14)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Restaurant George",
-                "legs": [{"leg_id": "bcr-leg-14", "account_id": "bcr-acc-1", "amount": -120.0, "currency": "RON", "description": "George Pay Restaurant"}]
-            },
-            {
-                "id": "bcr-tx-15",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=15)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=15)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Catering eveniment privat & restaurant aniversare",
-                "legs": [{"leg_id": "bcr-leg-15", "account_id": "bcr-acc-1", "amount": -1450.0, "currency": "RON", "description": "Catering George"}]
-            }
-        ]
+        salary_ref = "Salariu SC George Tech SRL"
+        salary_desc = "George Salary"
     else:
-        # Generic fallback
-        return [
-            {
-                "id": f"{bank_id}-tx-1",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": f"Salariu lunar SC {display_name} SRL",
-                "legs": [{"leg_id": f"{bank_id}-leg-1", "account_id": f"{bank_id}-acc-1", "amount": 6200.0, "currency": "RON", "description": "Salariu lunar"}]
-            },
-            {
-                "id": f"{bank_id}-tx-2",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata chirie apartament",
-                "legs": [{"leg_id": f"{bank_id}-leg-2", "account_id": f"{bank_id}-acc-1", "amount": -1800.0, "currency": "RON", "description": "Chirie apartament"}]
-            },
-            {
-                "id": f"{bank_id}-tx-3",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=3)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=3)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Mega Image",
-                "legs": [{"leg_id": f"{bank_id}-leg-3", "account_id": f"{bank_id}-acc-1", "amount": -120.5, "currency": "RON", "description": "Mega Image"}]
-            },
-            {
-                "id": f"{bank_id}-tx-4",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=4)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=4)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Lidl",
-                "legs": [{"leg_id": f"{bank_id}-leg-4", "account_id": f"{bank_id}-acc-1", "amount": -240.2, "currency": "RON", "description": "Lidl POS"}]
-            },
-            {
-                "id": f"{bank_id}-tx-5",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=5)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=5)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Altex",
-                "legs": [{"leg_id": f"{bank_id}-leg-5", "account_id": f"{bank_id}-acc-1", "amount": -4500.0, "currency": "RON", "description": "Altex Romania - Achizitie Monitor Gaming"}]
-            },
-            {
-                "id": f"{bank_id}-tx-6",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=6)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=6)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Transfer cont tranzactionare Tradeville",
-                "legs": [{"leg_id": f"{bank_id}-leg-6", "account_id": f"{bank_id}-acc-1", "amount": -800.0, "currency": "RON", "description": "Tradeville ETF"}]
-            },
-            {
-                "id": f"{bank_id}-tx-7",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Uber ridesharing",
-                "legs": [{"leg_id": f"{bank_id}-leg-7", "account_id": f"{bank_id}-acc-1", "amount": -35.0, "currency": "RON", "description": "Uber Cursa"}]
-            },
-            {
-                "id": f"{bank_id}-tx-8",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=8)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=8)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Bolt ridesharing",
-                "legs": [{"leg_id": f"{bank_id}-leg-8", "account_id": f"{bank_id}-acc-1", "amount": -28.0, "currency": "RON", "description": "Bolt Cursa"}]
-            },
-            {
-                "id": f"{bank_id}-tx-9",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=9)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=9)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Factura curent electric Enel",
-                "legs": [{"leg_id": f"{bank_id}-leg-9", "account_id": f"{bank_id}-acc-1", "amount": -150.0, "currency": "RON", "description": "Enel"}]
-            },
-            {
-                "id": f"{bank_id}-tx-10",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=10)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=10)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Factura Digi Net & Mobil",
-                "legs": [{"leg_id": f"{bank_id}-leg-10", "account_id": f"{bank_id}-acc-1", "amount": -85.0, "currency": "RON", "description": "Digi Mobil"}]
-            },
-            {
-                "id": f"{bank_id}-tx-11",
-                "type": "TRANSFER",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=11)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=11)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Servicii consultanta Web Design",
-                "legs": [{"leg_id": f"{bank_id}-leg-11", "account_id": f"{bank_id}-acc-1", "amount": 1500.0, "currency": "RON", "description": "Freelance Design"}]
-            },
-            {
-                "id": f"{bank_id}-tx-12",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=12)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=12)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Farmacia Tei",
-                "legs": [{"leg_id": f"{bank_id}-leg-12", "account_id": f"{bank_id}-acc-1", "amount": -95.0, "currency": "RON", "description": "Farmacia Tei"}]
-            },
-            {
-                "id": f"{bank_id}-tx-13",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=13)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=13)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Netflix Subscription",
-                "legs": [{"leg_id": f"{bank_id}-leg-13", "account_id": f"{bank_id}-acc-1", "amount": -65.0, "currency": "RON", "description": "Netflix"}]
-            },
-            {
-                "id": f"{bank_id}-tx-14",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=14)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=14)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Plata POS Restaurant Tazz",
-                "legs": [{"leg_id": f"{bank_id}-leg-14", "account_id": f"{bank_id}-acc-1", "amount": -130.0, "currency": "RON", "description": "Tazz Food"}]
-            },
-            {
-                "id": f"{bank_id}-tx-15",
-                "type": "CARD_PAYMENT",
-                "state": "COMPLETED",
-                "created_at": (today - datetime.timedelta(days=15)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "completed_at": (today - datetime.timedelta(days=15)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "reference": "Catering aniversare restaurant",
-                "legs": [{"leg_id": f"{bank_id}-leg-15", "account_id": f"{bank_id}-acc-1", "amount": -1450.0, "currency": "RON", "description": "Restaurant aniversare"}]
-            }
-        ]
+        salary_ref = f"Salariu lunar SC {display_name} SRL"
+        salary_desc = "Salariu lunar"
+
+    txs.append({
+        "id": f"{bank_id}-tx-sal",
+        "type": "TRANSFER",
+        "state": "COMPLETED",
+        "created_at": salary_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "completed_at": salary_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "reference": salary_ref,
+        "legs": [{
+            "leg_id": f"{bank_id}-leg-sal",
+            "account_id": f"{bank_id}-acc-1",
+            "amount": salary_amount,
+            "currency": "RON",
+            "description": salary_desc
+        }]
+    })
+
+    # Freelancing
+    free_amount = 1000.0 + random.randint(1, 15) * 100.0
+    free_date = today - datetime.timedelta(days=random.randint(5, 15))
+    if bank_id == "bt":
+        free_ref = "Servicii consultanta Web Design"
+        free_desc = "Freelancing BT Pay"
+    elif bank_id == "ing":
+        free_ref = "Servicii consultanta Web Design"
+        free_desc = "Freelance Home'Bank"
+    elif bank_id == "bcr":
+        free_ref = "Servicii consultanta Web Design"
+        free_desc = "Freelance George"
+    else:
+        free_ref = "Servicii consultanta Web Design"
+        free_desc = "Freelancing design"
+
+    txs.append({
+        "id": f"{bank_id}-tx-free",
+        "type": "TRANSFER",
+        "state": "COMPLETED",
+        "created_at": free_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "completed_at": free_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "reference": free_ref,
+        "legs": [{
+            "leg_id": f"{bank_id}-leg-free",
+            "account_id": f"{bank_id}-acc-1",
+            "amount": free_amount,
+            "currency": "RON",
+            "description": free_desc
+        }]
+    })
+
+    # 2. Chirie (negativ)
+    rent_amount = -(1400.0 + random.randint(1, 10) * 50.0)
+    rent_date = today - datetime.timedelta(days=random.randint(22, 26))
+    if bank_id == "bt":
+        rent_ref = "Plata chirie apartament"
+        rent_desc = "Chirie apartament Cluj"
+    elif bank_id == "ing":
+        rent_ref = "Plata chirie apartament"
+        rent_desc = "ING Direct Rent"
+    elif bank_id == "bcr":
+        rent_ref = "Plata chirie apartament"
+        rent_desc = "George Rent Payment"
+    else:
+        rent_ref = "Plata chirie apartament"
+        rent_desc = "Chirie apartament"
+
+    txs.append({
+        "id": f"{bank_id}-tx-rent",
+        "type": "TRANSFER",
+        "state": "COMPLETED",
+        "created_at": rent_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "completed_at": rent_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "reference": rent_ref,
+        "legs": [{
+            "leg_id": f"{bank_id}-leg-rent",
+            "account_id": f"{bank_id}-acc-1",
+            "amount": rent_amount,
+            "currency": "RON",
+            "description": rent_desc
+        }]
+    })
+
+    # 3. Utilitati
+    utilities = [
+        {"ref": "Factura curent electric Enel", "desc": "Enel Energie Muntenia", "base_amount": -120.0, "var": 40},
+        {"ref": "Factura Digi Net & Mobil", "desc": "RCS & RDS SA Digi Net", "base_amount": -75.0, "var": 15},
+        {"ref": "Factura Gaz Engie", "desc": "Engie Romania", "base_amount": -180.0, "var": 60},
+        {"ref": "Intretinere Bloc", "desc": "Asociatie de proprietari", "base_amount": -300.0, "var": 120}
+    ]
+    # Pick a random subset of utilities
+    for idx, ut in enumerate(random.sample(utilities, random.randint(2, 4))):
+        ut_amount = ut["base_amount"] - random.uniform(0, ut["var"])
+        ut_amount = round(ut_amount, 2)
+        ut_date = today - datetime.timedelta(days=random.randint(6, 20))
+        txs.append({
+            "id": f"{bank_id}-tx-ut-{idx}",
+            "type": "TRANSFER",
+            "state": "COMPLETED",
+            "created_at": ut_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "completed_at": ut_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "reference": ut["ref"],
+            "legs": [{
+                "leg_id": f"{bank_id}-leg-ut-{idx}",
+                "account_id": f"{bank_id}-acc-1",
+                "amount": ut_amount,
+                "currency": "RON",
+                "description": ut["desc"]
+            }]
+        })
+
+    # 4. Supermarket & Food
+    food_options = [
+        {"ref": "Plata POS Mega Image", "desc": "Mega Image POS", "base_amount": -40.0, "var": 150},
+        {"ref": "Plata POS Lidl", "desc": "Lidl Supermarket", "base_amount": -50.0, "var": 180},
+        {"ref": "Plata POS Kaufland", "desc": "Kaufland Romania", "base_amount": -60.0, "var": 220},
+        {"ref": "Plata POS Carrefour", "desc": "Carrefour Hypermarket", "base_amount": -40.0, "var": 200},
+        {"ref": "Plata POS Restaurant", "desc": "Restaurant Centru", "base_amount": -50.0, "var": 150},
+        {"ref": "Plata Starbucks Coffee", "desc": "Starbucks Coffee POS", "base_amount": -18.0, "var": 25}
+    ]
+    # Add bank-specific food merchants to ensure test coverage
+    if bank_id == "bt":
+        food_options.append({"ref": "Cumparaturi Panemar", "desc": "Panemar Cluj POS", "base_amount": -15.0, "var": 35})
+    
+    for idx, merchant in enumerate(random.sample(food_options, min(len(food_options), random.randint(4, 6)))):
+        amount = merchant["base_amount"] - random.uniform(0, merchant["var"])
+        amount = round(amount, 2)
+        food_date = today - datetime.timedelta(days=random.randint(1, 25))
+        txs.append({
+            "id": f"{bank_id}-tx-food-{idx}",
+            "type": "CARD_PAYMENT",
+            "state": "COMPLETED",
+            "created_at": food_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "completed_at": food_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "reference": merchant["ref"],
+            "legs": [{
+                "leg_id": f"{bank_id}-leg-food-{idx}",
+                "account_id": f"{bank_id}-acc-1",
+                "amount": amount,
+                "currency": "RON",
+                "description": merchant["desc"]
+            }]
+        })
+
+    # 5. Transport
+    transport_merchants = [
+        {"ref": "Plata POS Uber ridesharing", "desc": "Uber Bucharest", "base_amount": -15.0, "var": 35},
+        {"ref": "Plata POS Bolt ridesharing", "desc": "Bolt Cursa", "base_amount": -12.0, "var": 30}
+    ]
+    for idx, tm in enumerate(transport_merchants):
+        amount = tm["base_amount"] - random.uniform(0, tm["var"])
+        amount = round(amount, 2)
+        t_date = today - datetime.timedelta(days=random.randint(2, 28))
+        txs.append({
+            "id": f"{bank_id}-tx-trans-{idx}",
+            "type": "CARD_PAYMENT",
+            "state": "COMPLETED",
+            "created_at": t_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "completed_at": t_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "reference": tm["ref"],
+            "legs": [{
+                "leg_id": f"{bank_id}-leg-trans-{idx}",
+                "account_id": f"{bank_id}-acc-1",
+                "amount": amount,
+                "currency": "RON",
+                "description": tm["desc"]
+            }]
+        })
+
+    # 6. Entertainment & Shopping
+    ent_options = [
+        {"ref": "Spotify Premium", "desc": "Spotify Stockholm", "amount": -25.0},
+        {"ref": "Cumparaturi eMAG", "desc": "eMAG.ro Showroom", "base_amount": -100.0, "var": 300}
+    ]
+    if bank_id == "ing":
+        ent_options.append({"ref": "Abonament Netflix Amsterdam", "desc": "Netflix Amsterdam", "amount": -65.0})
+    else:
+        ent_options.append({"ref": "Netflix Subscription", "desc": "Netflix.com payment", "amount": -65.0})
+        
+    for idx, em in enumerate(ent_options):
+        if "amount" in em:
+            amount = em["amount"]
+        else:
+            amount = em["base_amount"] - random.uniform(0, em["var"])
+        amount = round(amount, 2)
+        ent_date = today - datetime.timedelta(days=random.randint(1, 28))
+        txs.append({
+            "id": f"{bank_id}-tx-ent-{idx}",
+            "type": "CARD_PAYMENT",
+            "state": "COMPLETED",
+            "created_at": ent_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "completed_at": ent_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "reference": em["ref"],
+            "legs": [{
+                "leg_id": f"{bank_id}-leg-ent-{idx}",
+                "account_id": f"{bank_id}-acc-1",
+                "amount": amount,
+                "currency": "RON",
+                "description": em["desc"]
+            }]
+        })
+
+    # 7. Health & Fitness
+    health_merchants = [
+        {"ref": "Plata POS Farmacia Tei", "desc": "Farmacia Tei POS", "base_amount": -45.0, "var": 120},
+        {"ref": "Abonament WorldClass", "desc": "WorldClass fitness", "base_amount": -180.0, "var": 0}
+    ]
+    hm = random.choice(health_merchants)
+    amount = hm["base_amount"] - random.uniform(0, hm.get("var", 0))
+    amount = round(amount, 2)
+    h_date = today - datetime.timedelta(days=random.randint(5, 25))
+    txs.append({
+        "id": f"{bank_id}-tx-health",
+        "type": "CARD_PAYMENT",
+        "state": "COMPLETED",
+        "created_at": h_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "completed_at": h_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "reference": hm["ref"],
+        "legs": [{
+            "leg_id": f"{bank_id}-leg-health",
+            "account_id": f"{bank_id}-acc-1",
+            "amount": amount,
+            "currency": "RON",
+            "description": hm["desc"]
+        }]
+    })
+
+    # 8. Investments
+    inv_amount = -(300.0 + random.randint(1, 10) * 100.0)
+    inv_date = today - datetime.timedelta(days=random.randint(3, 10))
+    txs.append({
+        "id": f"{bank_id}-tx-invest",
+        "type": "TRANSFER",
+        "state": "COMPLETED",
+        "created_at": inv_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "completed_at": inv_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "reference": "Transfer cont tranzactionare Tradeville",
+        "legs": [{
+            "leg_id": f"{bank_id}-leg-invest",
+            "account_id": f"{bank_id}-acc-1",
+            "amount": inv_amount,
+            "currency": "RON",
+            "description": "Cumparare ETF Tradeville"
+        }]
+    })
+
+    # 9. Anomalii
+    if bank_id == "bt":
+        anom_ref = "Catering eveniment BT Cafe"
+        anom_desc = "BT Cafe aniversare"
+        anom_val = -1450.0
+    elif bank_id == "ing":
+        anom_ref = "Catering aniversare restaurant"
+        anom_desc = "Restaurant Tazz ING Pay"
+        anom_val = -1450.0
+    elif bank_id == "bcr":
+        anom_ref = "Catering eveniment privat & restaurant aniversare"
+        anom_desc = "Catering George"
+        anom_val = -1450.0
+    else:
+        anom_ref = "Catering aniversare restaurant"
+        anom_desc = "Restaurant aniversare"
+        anom_val = -1450.0
+        
+    anom_date = today - datetime.timedelta(days=random.randint(3, 18))
+    txs.append({
+        "id": f"{bank_id}-tx-anom-1",
+        "type": "CARD_PAYMENT",
+        "state": "COMPLETED",
+        "created_at": anom_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "completed_at": anom_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "reference": anom_ref,
+        "legs": [{
+            "leg_id": f"{bank_id}-leg-anom-1",
+            "account_id": f"{bank_id}-acc-1",
+            "amount": anom_val,
+            "currency": "RON",
+            "description": anom_desc
+        }]
+    })
+
+    # A doua anomalie random
+    second_anoms = [
+        {"ref": "Plata POS Altex Romania - Achizitie Laptop Gaming", "desc": "Altex Gaming System", "min_amt": -3500.0, "max_amt": -6000.0},
+        {"ref": "Plata POS Dedeman - Achizitie Materiale Constructii", "desc": "Dedeman - Renovare apartament", "min_amt": -3000.0, "max_amt": -5500.0},
+        {"ref": "Plata POS eMAG - Achizitie iPhone Pro Max", "desc": "eMAG IT & Mobile", "min_amt": -4500.0, "max_amt": -7500.0}
+    ]
+    chosen_sec = random.choice(second_anoms)
+    sec_amount = round(random.uniform(chosen_sec["min_amt"], chosen_sec["max_amt"]), 2)
+    sec_date = today - datetime.timedelta(days=random.randint(4, 15))
+    txs.append({
+        "id": f"{bank_id}-tx-anom-2",
+        "type": "CARD_PAYMENT",
+        "state": "COMPLETED",
+        "created_at": sec_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "completed_at": sec_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "reference": chosen_sec["ref"],
+        "legs": [{
+            "leg_id": f"{bank_id}-leg-anom-2",
+            "account_id": f"{bank_id}-acc-1",
+            "amount": sec_amount,
+            "currency": "RON",
+            "description": chosen_sec["desc"]
+        }]
+    })
+
+    txs.sort(key=lambda x: x["created_at"], reverse=True)
+    return txs
 
 
 @router.post("/bank-sandbox/sync", status_code=status.HTTP_201_CREATED)
