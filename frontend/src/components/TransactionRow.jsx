@@ -1,7 +1,7 @@
 import React from 'react';
-import { Calendar, Trash2, AlertTriangle, FileSpreadsheet, RefreshCw, PlusCircle } from 'lucide-react';
+import { Calendar, Trash2, AlertTriangle, FileSpreadsheet, Landmark, User } from 'lucide-react';
 
-export default function TransactionRow({ transaction, onDelete }) {
+export default function TransactionRow({ transaction, onDelete, onResolveAnomaly }) {
   const { id, suma, categorie, tip, descriere, data, sursa, este_anomala, anomalie_detalii } = transaction;
 
   // Formatare dată în limba română
@@ -20,11 +20,11 @@ export default function TransactionRow({ transaction, onDelete }) {
   const getSourceIcon = (src) => {
     switch (src) {
       case 'CSV':
-        return <FileSpreadsheet size={13} style={{ marginRight: '4px' }} />;
+        return <FileSpreadsheet size={13} style={{ marginRight: '4px' }} title="Import CSV" />;
       case 'Sincronizare Bancară':
-        return <RefreshCw size={13} style={{ marginRight: '4px' }} />;
+        return <Landmark size={13} style={{ marginRight: '4px' }} title="Sincronizare Bancară" />;
       default:
-        return <PlusCircle size={13} style={{ marginRight: '4px' }} />;
+        return <User size={13} style={{ marginRight: '4px' }} title="Adăugată manual" />;
     }
   };
 
@@ -36,14 +36,13 @@ export default function TransactionRow({ transaction, onDelete }) {
             <span className="tx-description">{descriere || `Tranzacție ${categorie}`}</span>
             <span className="tx-category">{categorie}</span>
           </div>
-          <div className="tx-meta-info">
-            <span className="tx-date">
+          <div className="tx-meta-info" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span className="tx-date" style={{ display: 'flex', alignItems: 'center' }}>
               <Calendar size={13} style={{ marginRight: '4px' }} />
               {formatDate(data)}
             </span>
-            <span className="tx-source" title={`Sursă: ${sursa}`}>
+            <span className="tx-source-icon-only" title={`Sursă: ${sursa}`} style={{ display: 'inline-flex', alignItems: 'center', color: 'var(--text-muted)' }}>
               {getSourceIcon(sursa)}
-              {sursa}
             </span>
           </div>
         </div>
@@ -80,9 +79,29 @@ export default function TransactionRow({ transaction, onDelete }) {
       </div>
 
       {este_anomala && (
-        <div className="anomaly-alert-banner">
-          <AlertTriangle size={15} />
-          <span><strong>Alertă ML (Anomalie):</strong> {anomalie_detalii}</span>
+        <div className="anomaly-alert-banner" style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <AlertTriangle size={15} style={{ flexShrink: 0 }} />
+            <span><strong>Alertă ML (Anomalie):</strong> {anomalie_detalii}</span>
+          </div>
+          {onResolveAnomaly && (
+            <div style={{ display: 'flex', gap: '10px', marginTop: '4px', marginLeft: '23px' }}>
+              <button 
+                type="button"
+                className="btn-anomaly-action btn-anomaly-confirm"
+                onClick={() => onResolveAnomaly(id, 'confirm')}
+              >
+                Confirmă
+              </button>
+              <button 
+                type="button"
+                className="btn-anomaly-action btn-anomaly-report"
+                onClick={() => onResolveAnomaly(id, 'report')}
+              >
+                Raportează
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

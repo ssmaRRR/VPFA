@@ -27,6 +27,7 @@ export default function Transactions() {
   const [tipFilter, setTipFilter] = useState('');
   const [catFilter, setCatFilter] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
 
   // Formular tranzacție nouă
   const [suma, setSuma] = useState('');
@@ -38,13 +39,24 @@ export default function Transactions() {
   // CSV file import state
   const [csvFile, setCsvFile] = useState(null);
 
+  // Debounce pentru căutare live
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
+
   const fetchTransactions = async () => {
     try {
       setLoading(true);
       const data = await api.getTransactions({
         tip: tipFilter,
         categorie: catFilter,
-        cautare: searchQuery
+        cautare: debouncedSearchQuery
       });
       setTransactions(data);
     } catch (err) {
@@ -72,11 +84,17 @@ export default function Transactions() {
     } else {
       fetchSubscriptions();
     }
-  }, [tipFilter, catFilter, activeTab]); // Reactiv la schimbarea filtrelor și tab-ului
+  }, [tipFilter, catFilter, debouncedSearchQuery, activeTab]); // Reactiv la schimbarea filtrelor, căutării și tab-ului
 
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    fetchTransactions();
+  const handleResolveAnomaly = async (txId, action) => {
+    try {
+      const res = await api.resolveAnomaly(txId, action);
+      setSuccess(res.message);
+      // După acțiunea de confirmare/raportare, reîncărcăm datele
+      fetchTransactions();
+    } catch (err) {
+      setError(err.message || 'Eroare la rezolvarea alertei.');
+    }
   };
 
   const handleAddSubscription = async (e) => {
@@ -285,34 +303,14 @@ export default function Transactions() {
                         setTip('cheltuiala');
                         setCategorie('Mâncare');
                       }}
-                      style={{
-                        flex: 1,
-                        padding: '10px',
-                        borderRadius: '6px',
-                        border: '1px solid var(--border-color)',
-                        background: tip === 'cheltuiala' ? 'rgba(235, 213, 199, 0.15)' : 'transparent',
-                        borderColor: tip === 'cheltuiala' ? '#ebd5c7' : 'var(--border-color)',
-                        color: tip === 'cheltuiala' ? '#fff' : 'var(--text-secondary)',
-                        fontWeight: '600',
-                        cursor: 'pointer'
-                      }}
+                      className={`tx-type-btn ${tip === 'cheltuiala' ? 'active-cheltuiala' : ''}`}
                     >
                       Cheltuială
                     </button>
                     <button
                       type="button"
                       onClick={() => setTip('venit')}
-                      style={{
-                        flex: 1,
-                        padding: '10px',
-                        borderRadius: '6px',
-                        border: '1px solid var(--border-color)',
-                        background: tip === 'venit' ? 'rgba(5, 196, 107, 0.15)' : 'transparent',
-                        borderColor: tip === 'venit' ? 'var(--success)' : 'var(--border-color)',
-                        color: tip === 'venit' ? '#fff' : 'var(--text-secondary)',
-                        fontWeight: '600',
-                        cursor: 'pointer'
-                      }}
+                      className={`tx-type-btn ${tip === 'venit' ? 'active-venit' : ''}`}
                     >
                       Venit
                     </button>
@@ -356,10 +354,13 @@ export default function Transactions() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">Dată Tranzacție (Opțional)</label>
+                  <label className="form-label">
+                    Dată Tranzacție <span style={{ color: 'var(--text-muted)', fontWeight: 'normal' }}>(Opțional, ZZ/LL/AAAA)</span>
+                  </label>
                   <input
                     type="date"
                     className="input-field"
+                    placeholder="dd/mm/yyyy"
                     value={data}
                     onChange={(e) => setData(e.target.value)}
                   />
@@ -430,20 +431,17 @@ export default function Transactions() {
             <Card className="tx-card-absolute">
               {/* Secțiune Filtre și Căutare */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px', flexShrink: 0 }}>
-                <form onSubmit={handleSearchSubmit} style={{ display: 'flex', flex: 1, gap: '10px', minWidth: '240px' }}>
-                  <div style={{ position: 'relative', flex: 1 }}>
-                    <input
-                      type="text"
-                      className="input-field"
-                      placeholder="Caută în descriere..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      style={{ paddingLeft: '40px' }}
-                    />
-                    <Search size={18} style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                  </div>
-                  <button type="submit" className="btn btn-secondary">Caută</button>
-                </form>
+                <div style={{ position: 'relative', flex: 1, minWidth: '240px' }}>
+                  <input
+                    type="text"
+                    className="input-field"
+                    placeholder="Caută în descriere..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{ paddingLeft: '40px' }}
+                  />
+                  <Search size={18} style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                </div>
 
                 <div className="transactions-filters-wrapper">
                   {/* Filtru Tip */}
@@ -498,6 +496,7 @@ export default function Transactions() {
                       key={tx.id}
                       transaction={tx}
                       onDelete={handleDelete}
+                      onResolveAnomaly={handleResolveAnomaly}
                     />
                   ))
                 ) : (

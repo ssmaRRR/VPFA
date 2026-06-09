@@ -88,7 +88,7 @@ def detect_anomalies(transactions: List[models.Transaction]) -> List[Tuple[int, 
         if is_anom:
             suma_val = row["suma"]
             cat_name = row["categorie"]
-            details = f"Cheltuială neobișnuită identificată de modelul ML Isolation Forest în valoare de {suma_val:.2f} RON la categoria {cat_name}."
+            details = f"Cheltuială neobișnuită identificată de sistemul nostru inteligent pentru categoria {cat_name}."
             
         anomaly_map[t_id] = (is_anom, details)
         

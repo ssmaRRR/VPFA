@@ -200,5 +200,11 @@ export const api = {
 
   async getUpcomingSubscriptions() {
     return this.request('/transactions/subscriptions/upcoming');
+  },
+
+  async resolveAnomaly(txId, action) {
+    return this.request(`/transactions/${txId}/resolve-anomaly?action=${action}`, {
+      method: 'POST'
+    });
   }
 };

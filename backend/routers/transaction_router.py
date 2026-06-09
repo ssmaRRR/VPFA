@@ -588,3 +588,36 @@ def get_upcoming_subscriptions(
             
     return upcoming
 
+
+@router.post("/{tx_id}/resolve-anomaly")
+def resolve_anomaly(
+    tx_id: int,
+    action: str,  # "confirm" sau "report"
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Rezolvă o anomalie prin confirmare (tranzacția devine legitimă)
+    sau prin raportare (tranzacția este ștearsă din istoric).
+    """
+    tx = db.query(models.Transaction).filter(
+        models.Transaction.id == tx_id,
+        models.Transaction.user_id == current_user.id
+    ).first()
+    
+    if not tx:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tranzacția nu a fost găsită.")
+        
+    if action == "confirm":
+        tx.este_anomala = False
+        tx.anomalie_detalii = None
+        db.commit()
+        return {"message": "Tranzacția a fost confirmată ca legitimă."}
+    elif action == "report":
+        db.delete(tx)
+        db.commit()
+        return {"message": "Tranzacția suspectă a fost raportată și eliminată."}
+    else:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Acțiune invalidă.")
+
+
