@@ -33,8 +33,61 @@ export default function Dashboard({ user, onAddTransactionNav }) {
   const [syncAllSummary, setSyncAllSummary] = useState({ count: 0, anomalies: 0 });
   const [syncAllLoading, setSyncAllLoading] = useState(false);
 
+  // Filtrare tranzacții pe baza perioadei selectate (luna curentă, ultimele 30/90 de zile)
+  const getFilteredTransactions = () => {
+    const today = new Date();
+    // Pentru a include corect și tranzacțiile din ziua curentă, setăm sfârșitul zilei
+    today.setHours(23, 59, 59, 999);
+
+    return allTransactions.filter(tx => {
+      const txDate = new Date(tx.data);
+      if (perioadaSelectata === 'luna_curenta') {
+        return txDate.getFullYear() === today.getFullYear() && txDate.getMonth() === today.getMonth();
+      } else if (perioadaSelectata === 'ultimele_30') {
+        const thirtyDaysAgo = new Date(today);
+        thirtyDaysAgo.setDate(today.getDate() - 30);
+        thirtyDaysAgo.setHours(0, 0, 0, 0);
+        return txDate >= thirtyDaysAgo && txDate <= today;
+      } else if (perioadaSelectata === 'ultimele_90') {
+        const ninetyDaysAgo = new Date(today);
+        ninetyDaysAgo.setDate(today.getDate() - 90);
+        ninetyDaysAgo.setHours(0, 0, 0, 0);
+        return txDate >= ninetyDaysAgo && txDate <= today;
+      }
+      return true;
+    });
+  };
+
+  // Recalculare dinamică a rezumatului financiar pe baza tranzacțiilor filtrate
+  const getDerivedSummary = () => {
+    const txs = getFilteredTransactions();
+    const venituri = txs.filter(t => t.tip === 'venit').reduce((sum, t) => sum + t.suma, 0);
+    const cheltuieli = txs.filter(t => t.tip === 'cheltuiala').reduce((sum, t) => sum + t.suma, 0);
+    const sold = venituri - cheltuieli;
+    let rata_eco = 0;
+    if (venituri > 0) {
+      rata_eco = ((venituri - cheltuieli) / venituri) * 100;
+    }
+    const alerte = txs.filter(t => t.este_anomala && t.tip === 'cheltuiala').length;
+    
+    return {
+      venituri_totale: Math.round(venituri * 100) / 100,
+      cheltuieli_totale: Math.round(cheltuieli * 100) / 100,
+      sold_curent: Math.round(sold * 100) / 100,
+      rata_economisire: Math.round(rata_eco * 10) / 10,
+      alerte_anomalii: alerte
+    };
+  };
+
+  const derivedSummary = summary ? getDerivedSummary() : null;
+
+  // Obținerea celor mai recente tranzacții din perioada selectată
+  const getRecentFilteredTransactions = () => {
+    return getFilteredTransactions().slice(0, 6);
+  };
+
   const getExpensesByCategory = () => {
-    const expenses = allTransactions.filter(tx => tx.tip === 'cheltuiala');
+    const expenses = getFilteredTransactions().filter(tx => tx.tip === 'cheltuiala');
     const categoriesMap = {};
     expenses.forEach(tx => {
       categoriesMap[tx.categorie] = (categoriesMap[tx.categorie] || 0) + tx.suma;
@@ -412,7 +465,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
             <Sparkles size={16} />
             <span>{message.text}</span>
           </div>
-          {message.type === 'success' && summary?.alerte_anomalii > 0 && message.text.includes('anomalii') && (
+          {message.type === 'success' && derivedSummary?.alerte_anomalii > 0 && message.text.includes('anomalii') && (
             <button 
               onClick={() => setShowAnomalyModal(true)}
               className="btn btn-secondary"
@@ -432,7 +485,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
       )}
 
       {/* Grid Indicatori Cheie */}
-      {summary && (
+      {derivedSummary && (
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
@@ -452,7 +505,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
             <div>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Balanță Lunară</span>
               <h2 style={{ fontSize: '1.6rem', fontWeight: '700' }} className="glow-text">
-                {summary.sold_curent.toLocaleString('ro-RO')} RON
+                {derivedSummary.sold_curent.toLocaleString('ro-RO')} RON
               </h2>
             </div>
           </Card>
@@ -470,7 +523,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
             <div>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Venituri Totale</span>
               <h2 style={{ fontSize: '1.6rem', fontWeight: '700', color: 'var(--success)' }}>
-                +{summary.venituri_totale.toLocaleString('ro-RO')} RON
+                +{derivedSummary.venituri_totale.toLocaleString('ro-RO')} RON
               </h2>
             </div>
           </Card>
@@ -488,7 +541,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
             <div>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Cheltuieli Totale</span>
               <h2 style={{ fontSize: '1.6rem', fontWeight: '700', color: '#ebd5c7' }}>
-                -{summary.cheltuieli_totale.toLocaleString('ro-RO')} RON
+                -{derivedSummary.cheltuieli_totale.toLocaleString('ro-RO')} RON
               </h2>
             </div>
           </Card>
@@ -506,7 +559,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
             <div>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Rată Economisire</span>
               <h2 style={{ fontSize: '1.6rem', fontWeight: '700', color: 'var(--amber)' }}>
-                {summary.rata_economisire}%
+                {derivedSummary.rata_economisire}%
               </h2>
             </div>
           </Card>
@@ -518,31 +571,31 @@ export default function Dashboard({ user, onAddTransactionNav }) {
               display: 'flex', 
               alignItems: 'center', 
               gap: '15px',
-              border: summary.alerte_anomalii > 0 ? '1px solid rgba(255, 94, 87, 0.3)' : '1px solid var(--border-color)',
-              background: summary.alerte_anomalii > 0 ? 'rgba(255, 94, 87, 0.05)' : 'var(--bg-card)',
-              cursor: summary.alerte_anomalii > 0 ? 'pointer' : 'default'
+              border: derivedSummary.alerte_anomalii > 0 ? '1px solid rgba(255, 94, 87, 0.3)' : '1px solid var(--border-color)',
+              background: derivedSummary.alerte_anomalii > 0 ? 'rgba(255, 94, 87, 0.05)' : 'var(--bg-card)',
+              cursor: derivedSummary.alerte_anomalii > 0 ? 'pointer' : 'default'
             }}
             onClick={() => {
-              if (summary.alerte_anomalii > 0) {
+              if (derivedSummary.alerte_anomalii > 0) {
                 setShowAnomalyModal(true);
               }
             }}
           >
             <div style={{
-              background: summary.alerte_anomalii > 0 ? 'rgba(255, 94, 87, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-              color: summary.alerte_anomalii > 0 ? 'var(--warning)' : 'var(--text-muted)',
+              background: derivedSummary.alerte_anomalii > 0 ? 'rgba(255, 94, 87, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+              color: derivedSummary.alerte_anomalii > 0 ? 'var(--warning)' : 'var(--text-muted)',
               padding: '12px',
               borderRadius: '12px',
-              animation: summary.alerte_anomalii > 0 ? 'pulse 2s infinite' : 'none'
+              animation: derivedSummary.alerte_anomalii > 0 ? 'pulse 2s infinite' : 'none'
             }}>
               <AlertOctagon size={24} />
             </div>
             <div>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Alerte Anomalii (ML)</span>
-              <h2 style={{ fontSize: '1.6rem', fontWeight: '700', color: summary.alerte_anomalii > 0 ? 'var(--warning)' : 'var(--text-primary)' }}>
-                {summary.alerte_anomalii}
+              <h2 style={{ fontSize: '1.6rem', fontWeight: '700', color: derivedSummary.alerte_anomalii > 0 ? 'var(--warning)' : 'var(--text-primary)' }}>
+                {derivedSummary.alerte_anomalii}
               </h2>
-              {summary.alerte_anomalii > 0 && (
+              {derivedSummary.alerte_anomalii > 0 && (
                 <span 
                   style={{ 
                     fontSize: '0.75rem', 
@@ -605,7 +658,7 @@ export default function Dashboard({ user, onAddTransactionNav }) {
             <div className="dashboard-combined-grid">
               {/* Partea Stângă: Donut Chart + Legendă Interactivă (2.2/3) */}
               <div>
-                {allTransactions.filter(tx => tx.tip === 'cheltuiala').length > 0 ? (
+                {getFilteredTransactions().filter(tx => tx.tip === 'cheltuiala').length > 0 ? (
                   <div style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -769,8 +822,8 @@ export default function Dashboard({ user, onAddTransactionNav }) {
           <Card title="Tranzacții Recente" className="dashboard-tx-card">
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1, minHeight: 0 }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', flex: 1, minHeight: 0, overflowY: 'auto' }}>
-                {recentTransactions.length > 0 ? (
-                  recentTransactions.map((tx) => (
+                {getRecentFilteredTransactions().length > 0 ? (
+                  getRecentFilteredTransactions().map((tx) => (
                     <TransactionRow 
                       key={tx.id} 
                       transaction={tx} 
@@ -838,8 +891,8 @@ export default function Dashboard({ user, onAddTransactionNav }) {
               marginBottom: '20px', 
               paddingRight: '5px' 
             }}>
-              {allTransactions.filter(tx => tx.este_anomala).length > 0 ? (
-                allTransactions.filter(tx => tx.este_anomala).map((tx) => (
+              {getFilteredTransactions().filter(tx => tx.este_anomala).length > 0 ? (
+                getFilteredTransactions().filter(tx => tx.este_anomala).map((tx) => (
                   <TransactionRow 
                     key={tx.id} 
                     transaction={tx} 
