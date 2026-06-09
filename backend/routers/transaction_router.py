@@ -898,325 +898,332 @@ def fetch_bank_sandbox_data(bank_id: str, client_id: str, client_secret: str, ot
 def get_bank_fallback_transactions(bank_id: str, display_name: str, today: datetime.datetime):
     txs = []
     
-    # 1. Venituri (Salariu / Freelancing)
-    salary_amount = 5000.0 + random.randint(5, 25) * 100.0
-    salary_date = today - datetime.timedelta(days=random.randint(20, 27))
-    
-    if bank_id == "bt":
-        salary_ref = "Salariu SC Transilvania IT SRL"
-        salary_desc = "Salariu lunar BT24"
-    elif bank_id == "ing":
-        salary_ref = "Salariu ING-Dutch Software"
-        salary_desc = "Home'Bank Salary"
-    elif bank_id == "bcr":
-        salary_ref = "Salariu SC George Tech SRL"
-        salary_desc = "George Salary"
-    else:
-        salary_ref = f"Salariu lunar SC {display_name} SRL"
-        salary_desc = "Salariu lunar"
+    # Generăm tranzacții pentru ultimele 3 luni (90 de zile)
+    # month_offset 0: luna curentă, 1: luna trecută, 2: acum două luni
+    for month_offset in range(3):
+        days_base = month_offset * 30
+        
+        # 1. Venituri (Salariu lunar în fiecare lună)
+        salary_amount = 5000.0 + random.randint(5, 25) * 100.0
+        salary_date = today - datetime.timedelta(days=days_base + random.randint(20, 26))
+        
+        if bank_id == "bt":
+            salary_ref = "Salariu SC Transilvania IT SRL"
+            salary_desc = f"Salariu lunar BT24 - Luna {3 - month_offset}"
+        elif bank_id == "ing":
+            salary_ref = "Salariu ING-Dutch Software"
+            salary_desc = "Home'Bank Salary"
+        elif bank_id == "bcr":
+            salary_ref = "Salariu SC George Tech SRL"
+            salary_desc = "George Salary"
+        else:
+            salary_ref = f"Salariu lunar SC {display_name} SRL"
+            salary_desc = "Salariu lunar"
 
-    txs.append({
-        "id": f"{bank_id}-tx-sal",
-        "type": "TRANSFER",
-        "state": "COMPLETED",
-        "created_at": salary_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "completed_at": salary_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "reference": salary_ref,
-        "legs": [{
-            "leg_id": f"{bank_id}-leg-sal",
-            "account_id": f"{bank_id}-acc-1",
-            "amount": salary_amount,
-            "currency": "RON",
-            "description": salary_desc
-        }]
-    })
-
-    # Freelancing
-    free_amount = 1000.0 + random.randint(1, 15) * 100.0
-    free_date = today - datetime.timedelta(days=random.randint(5, 15))
-    if bank_id == "bt":
-        free_ref = "Servicii consultanta Web Design"
-        free_desc = "Freelancing BT Pay"
-    elif bank_id == "ing":
-        free_ref = "Servicii consultanta Web Design"
-        free_desc = "Freelance Home'Bank"
-    elif bank_id == "bcr":
-        free_ref = "Servicii consultanta Web Design"
-        free_desc = "Freelance George"
-    else:
-        free_ref = "Servicii consultanta Web Design"
-        free_desc = "Freelancing design"
-
-    txs.append({
-        "id": f"{bank_id}-tx-free",
-        "type": "TRANSFER",
-        "state": "COMPLETED",
-        "created_at": free_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "completed_at": free_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "reference": free_ref,
-        "legs": [{
-            "leg_id": f"{bank_id}-leg-free",
-            "account_id": f"{bank_id}-acc-1",
-            "amount": free_amount,
-            "currency": "RON",
-            "description": free_desc
-        }]
-    })
-
-    # 2. Chirie (negativ)
-    rent_amount = -(1400.0 + random.randint(1, 10) * 50.0)
-    rent_date = today - datetime.timedelta(days=random.randint(22, 26))
-    if bank_id == "bt":
-        rent_ref = "Plata chirie apartament"
-        rent_desc = "Chirie apartament Cluj"
-    elif bank_id == "ing":
-        rent_ref = "Plata chirie apartament"
-        rent_desc = "ING Direct Rent"
-    elif bank_id == "bcr":
-        rent_ref = "Plata chirie apartament"
-        rent_desc = "George Rent Payment"
-    else:
-        rent_ref = "Plata chirie apartament"
-        rent_desc = "Chirie apartament"
-
-    txs.append({
-        "id": f"{bank_id}-tx-rent",
-        "type": "TRANSFER",
-        "state": "COMPLETED",
-        "created_at": rent_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "completed_at": rent_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "reference": rent_ref,
-        "legs": [{
-            "leg_id": f"{bank_id}-leg-rent",
-            "account_id": f"{bank_id}-acc-1",
-            "amount": rent_amount,
-            "currency": "RON",
-            "description": rent_desc
-        }]
-    })
-
-    # 3. Utilitati
-    utilities = [
-        {"ref": "Factura curent electric Enel", "desc": "Enel Energie Muntenia", "base_amount": -120.0, "var": 40},
-        {"ref": "Factura Digi Net & Mobil", "desc": "RCS & RDS SA Digi Net", "base_amount": -75.0, "var": 15},
-        {"ref": "Factura Gaz Engie", "desc": "Engie Romania", "base_amount": -180.0, "var": 60},
-        {"ref": "Intretinere Bloc", "desc": "Asociatie de proprietari", "base_amount": -300.0, "var": 120}
-    ]
-    # Pick a random subset of utilities
-    for idx, ut in enumerate(random.sample(utilities, random.randint(2, 4))):
-        ut_amount = ut["base_amount"] - random.uniform(0, ut["var"])
-        ut_amount = round(ut_amount, 2)
-        ut_date = today - datetime.timedelta(days=random.randint(6, 20))
         txs.append({
-            "id": f"{bank_id}-tx-ut-{idx}",
+            "id": f"{bank_id}-tx-sal-{month_offset}",
             "type": "TRANSFER",
             "state": "COMPLETED",
-            "created_at": ut_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "completed_at": ut_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "reference": ut["ref"],
+            "created_at": salary_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "completed_at": salary_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "reference": salary_ref,
             "legs": [{
-                "leg_id": f"{bank_id}-leg-ut-{idx}",
+                "leg_id": f"{bank_id}-leg-sal-{month_offset}",
                 "account_id": f"{bank_id}-acc-1",
-                "amount": ut_amount,
+                "amount": salary_amount,
                 "currency": "RON",
-                "description": ut["desc"]
+                "description": salary_desc
             }]
         })
 
-    # 4. Supermarket & Food
-    food_options = [
-        {"ref": "Plata POS Mega Image", "desc": "Mega Image POS", "base_amount": -40.0, "var": 150},
-        {"ref": "Plata POS Lidl", "desc": "Lidl Supermarket", "base_amount": -50.0, "var": 180},
-        {"ref": "Plata POS Kaufland", "desc": "Kaufland Romania", "base_amount": -60.0, "var": 220},
-        {"ref": "Plata POS Carrefour", "desc": "Carrefour Hypermarket", "base_amount": -40.0, "var": 200},
-        {"ref": "Plata POS Restaurant", "desc": "Restaurant Centru", "base_amount": -50.0, "var": 150},
-        {"ref": "Plata Starbucks Coffee", "desc": "Starbucks Coffee POS", "base_amount": -18.0, "var": 25}
-    ]
-    # Add bank-specific food merchants to ensure test coverage
-    if bank_id == "bt":
-        food_options.append({"ref": "Cumparaturi Panemar", "desc": "Panemar Cluj POS", "base_amount": -15.0, "var": 35})
-    
-    for idx, merchant in enumerate(random.sample(food_options, min(len(food_options), random.randint(4, 6)))):
-        amount = merchant["base_amount"] - random.uniform(0, merchant["var"])
-        amount = round(amount, 2)
-        food_date = today - datetime.timedelta(days=random.randint(1, 25))
-        txs.append({
-            "id": f"{bank_id}-tx-food-{idx}",
-            "type": "CARD_PAYMENT",
-            "state": "COMPLETED",
-            "created_at": food_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "completed_at": food_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "reference": merchant["ref"],
-            "legs": [{
-                "leg_id": f"{bank_id}-leg-food-{idx}",
-                "account_id": f"{bank_id}-acc-1",
-                "amount": amount,
-                "currency": "RON",
-                "description": merchant["desc"]
-            }]
-        })
+        # Freelancing (opțional, în unele luni)
+        if random.random() > 0.3:
+            free_amount = 1000.0 + random.randint(1, 15) * 100.0
+            free_date = today - datetime.timedelta(days=days_base + random.randint(5, 15))
+            if bank_id == "bt":
+                free_ref = "Servicii consultanta Web Design"
+                free_desc = "Freelancing BT Pay"
+            elif bank_id == "ing":
+                free_ref = "Servicii consultanta Web Design"
+                free_desc = "Freelance Home'Bank"
+            elif bank_id == "bcr":
+                free_ref = "Servicii consultanta Web Design"
+                free_desc = "Freelance George"
+            else:
+                free_ref = "Servicii consultanta Web Design"
+                free_desc = "Freelancing design"
 
-    # 5. Transport
-    transport_merchants = [
-        {"ref": "Plata POS Uber ridesharing", "desc": "Uber Bucharest", "base_amount": -15.0, "var": 35},
-        {"ref": "Plata POS Bolt ridesharing", "desc": "Bolt Cursa", "base_amount": -12.0, "var": 30}
-    ]
-    for idx, tm in enumerate(transport_merchants):
-        amount = tm["base_amount"] - random.uniform(0, tm["var"])
-        amount = round(amount, 2)
-        t_date = today - datetime.timedelta(days=random.randint(2, 28))
-        txs.append({
-            "id": f"{bank_id}-tx-trans-{idx}",
-            "type": "CARD_PAYMENT",
-            "state": "COMPLETED",
-            "created_at": t_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "completed_at": t_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "reference": tm["ref"],
-            "legs": [{
-                "leg_id": f"{bank_id}-leg-trans-{idx}",
-                "account_id": f"{bank_id}-acc-1",
-                "amount": amount,
-                "currency": "RON",
-                "description": tm["desc"]
-            }]
-        })
+            txs.append({
+                "id": f"{bank_id}-tx-free-{month_offset}",
+                "type": "TRANSFER",
+                "state": "COMPLETED",
+                "created_at": free_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "completed_at": free_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "reference": free_ref,
+                "legs": [{
+                    "leg_id": f"{bank_id}-leg-free-{month_offset}",
+                    "account_id": f"{bank_id}-acc-1",
+                    "amount": free_amount,
+                    "currency": "RON",
+                    "description": free_desc
+                }]
+            })
 
-    # 6. Entertainment & Shopping
-    ent_options = [
-        {"ref": "Spotify Premium", "desc": "Spotify Stockholm", "amount": -25.0},
-        {"ref": "Cumparaturi eMAG", "desc": "eMAG.ro Showroom", "base_amount": -100.0, "var": 300}
-    ]
-    if bank_id == "ing":
-        ent_options.append({"ref": "Abonament Netflix Amsterdam", "desc": "Netflix Amsterdam", "amount": -65.0})
-    else:
-        ent_options.append({"ref": "Netflix Subscription", "desc": "Netflix.com payment", "amount": -65.0})
-        
-    for idx, em in enumerate(ent_options):
-        if "amount" in em:
-            amount = em["amount"]
+        # 2. Chirie (negativ, lunar)
+        rent_amount = -(1400.0 + random.randint(1, 10) * 50.0)
+        rent_date = today - datetime.timedelta(days=days_base + random.randint(22, 26))
+        if bank_id == "bt":
+            rent_ref = "Plata chirie apartament"
+            rent_desc = "Chirie apartament Cluj"
+        elif bank_id == "ing":
+            rent_ref = "Plata chirie apartament"
+            rent_desc = "ING Direct Rent"
+        elif bank_id == "bcr":
+            rent_ref = "Plata chirie apartament"
+            rent_desc = "George Rent Payment"
         else:
-            amount = em["base_amount"] - random.uniform(0, em["var"])
-        amount = round(amount, 2)
-        ent_date = today - datetime.timedelta(days=random.randint(1, 28))
+            rent_ref = "Plata chirie apartament"
+            rent_desc = "Chirie apartament"
+
         txs.append({
-            "id": f"{bank_id}-tx-ent-{idx}",
-            "type": "CARD_PAYMENT",
+            "id": f"{bank_id}-tx-rent-{month_offset}",
+            "type": "TRANSFER",
             "state": "COMPLETED",
-            "created_at": ent_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "completed_at": ent_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "reference": em["ref"],
+            "created_at": rent_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "completed_at": rent_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "reference": rent_ref,
             "legs": [{
-                "leg_id": f"{bank_id}-leg-ent-{idx}",
+                "leg_id": f"{bank_id}-leg-rent-{month_offset}",
                 "account_id": f"{bank_id}-acc-1",
-                "amount": amount,
+                "amount": rent_amount,
                 "currency": "RON",
-                "description": em["desc"]
+                "description": rent_desc
             }]
         })
 
-    # 7. Health & Fitness
-    health_merchants = [
-        {"ref": "Plata POS Farmacia Tei", "desc": "Farmacia Tei POS", "base_amount": -45.0, "var": 120},
-        {"ref": "Abonament WorldClass", "desc": "WorldClass fitness", "base_amount": -180.0, "var": 0}
-    ]
-    hm = random.choice(health_merchants)
-    amount = hm["base_amount"] - random.uniform(0, hm.get("var", 0))
-    amount = round(amount, 2)
-    h_date = today - datetime.timedelta(days=random.randint(5, 25))
-    txs.append({
-        "id": f"{bank_id}-tx-health",
-        "type": "CARD_PAYMENT",
-        "state": "COMPLETED",
-        "created_at": h_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "completed_at": h_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "reference": hm["ref"],
-        "legs": [{
-            "leg_id": f"{bank_id}-leg-health",
-            "account_id": f"{bank_id}-acc-1",
-            "amount": amount,
-            "currency": "RON",
-            "description": hm["desc"]
-        }]
-    })
+        # 3. Utilități (lunar)
+        utilities = [
+            {"ref": "Factura curent electric Enel", "desc": "Enel Energie Muntenia", "base_amount": -120.0, "var": 40},
+            {"ref": "Factura Digi Net & Mobil", "desc": "RCS & RDS SA Digi Net", "base_amount": -75.0, "var": 15},
+            {"ref": "Factura Gaz Engie", "desc": "Engie Romania", "base_amount": -180.0, "var": 60},
+            {"ref": "Intretinere Bloc", "desc": "Asociatie de proprietari", "base_amount": -300.0, "var": 120}
+        ]
+        for idx, ut in enumerate(utilities):
+            ut_amount = ut["base_amount"] - random.uniform(0, ut["var"])
+            ut_amount = round(ut_amount, 2)
+            ut_date = today - datetime.timedelta(days=days_base + random.randint(5, 20))
+            txs.append({
+                "id": f"{bank_id}-tx-ut-{month_offset}-{idx}",
+                "type": "TRANSFER",
+                "state": "COMPLETED",
+                "created_at": ut_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "completed_at": ut_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "reference": ut["ref"],
+                "legs": [{
+                    "leg_id": f"{bank_id}-leg-ut-{month_offset}-{idx}",
+                    "account_id": f"{bank_id}-acc-1",
+                    "amount": ut_amount,
+                    "currency": "RON",
+                    "description": ut["desc"]
+                }]
+            })
 
-    # 8. Investments
-    inv_amount = -(300.0 + random.randint(1, 10) * 100.0)
-    inv_date = today - datetime.timedelta(days=random.randint(3, 10))
-    txs.append({
-        "id": f"{bank_id}-tx-invest",
-        "type": "TRANSFER",
-        "state": "COMPLETED",
-        "created_at": inv_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "completed_at": inv_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "reference": "Transfer cont tranzactionare Tradeville",
-        "legs": [{
-            "leg_id": f"{bank_id}-leg-invest",
-            "account_id": f"{bank_id}-acc-1",
-            "amount": inv_amount,
-            "currency": "RON",
-            "description": "Cumparare ETF Tradeville"
-        }]
-    })
+        # 4. Supermarket & Alimentare (Mâncare) - 4-5 tranzacții pe lună
+        food_options = [
+            {"ref": "Plata POS Mega Image", "desc": "Mega Image POS", "base_amount": -40.0, "var": 120},
+            {"ref": "Plata POS Lidl", "desc": "Lidl Supermarket", "base_amount": -50.0, "var": 150},
+            {"ref": "Plata POS Kaufland", "desc": "Kaufland Romania", "base_amount": -60.0, "var": 200},
+            {"ref": "Plata POS Carrefour", "desc": "Carrefour Hypermarket", "base_amount": -40.0, "var": 180},
+            {"ref": "Plata POS Restaurant", "desc": "Restaurant Centru", "base_amount": -50.0, "var": 130},
+            {"ref": "Plata Starbucks Coffee", "desc": "Starbucks Coffee POS", "base_amount": -18.0, "var": 20}
+        ]
+        if bank_id == "bt":
+            food_options.append({"ref": "Cumparaturi Panemar", "desc": "Panemar Cluj POS", "base_amount": -15.0, "var": 30})
 
-    # 9. Anomalii
-    if bank_id == "bt":
-        anom_ref = "Catering eveniment BT Cafe"
-        anom_desc = "BT Cafe aniversare"
-        anom_val = -1450.0
-    elif bank_id == "ing":
-        anom_ref = "Catering aniversare restaurant"
-        anom_desc = "Restaurant Tazz ING Pay"
-        anom_val = -1450.0
-    elif bank_id == "bcr":
-        anom_ref = "Catering eveniment privat & restaurant aniversare"
-        anom_desc = "Catering George"
-        anom_val = -1450.0
-    else:
-        anom_ref = "Catering aniversare restaurant"
-        anom_desc = "Restaurant aniversare"
-        anom_val = -1450.0
-        
-    anom_date = today - datetime.timedelta(days=random.randint(3, 18))
-    txs.append({
-        "id": f"{bank_id}-tx-anom-1",
-        "type": "CARD_PAYMENT",
-        "state": "COMPLETED",
-        "created_at": anom_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "completed_at": anom_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "reference": anom_ref,
-        "legs": [{
-            "leg_id": f"{bank_id}-leg-anom-1",
-            "account_id": f"{bank_id}-acc-1",
-            "amount": anom_val,
-            "currency": "RON",
-            "description": anom_desc
-        }]
-    })
+        for idx, merchant in enumerate(random.sample(food_options, min(len(food_options), random.randint(4, 5)))):
+            amount = merchant["base_amount"] - random.uniform(0, merchant["var"])
+            amount = round(amount, 2)
+            food_date = today - datetime.timedelta(days=days_base + random.randint(1, 28))
+            txs.append({
+                "id": f"{bank_id}-tx-food-{month_offset}-{idx}",
+                "type": "CARD_PAYMENT",
+                "state": "COMPLETED",
+                "created_at": food_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "completed_at": food_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "reference": merchant["ref"],
+                "legs": [{
+                    "leg_id": f"{bank_id}-leg-food-{month_offset}-{idx}",
+                    "account_id": f"{bank_id}-acc-1",
+                    "amount": amount,
+                    "currency": "RON",
+                    "description": merchant["desc"]
+                }]
+            })
 
-    # A doua anomalie random
-    second_anoms = [
-        {"ref": "Plata POS Altex Romania - Achizitie Laptop Gaming", "desc": "Altex Gaming System", "min_amt": -3500.0, "max_amt": -6000.0},
-        {"ref": "Plata POS Dedeman - Achizitie Materiale Constructii", "desc": "Dedeman - Renovare apartament", "min_amt": -3000.0, "max_amt": -5500.0},
-        {"ref": "Plata POS eMAG - Achizitie iPhone Pro Max", "desc": "eMAG IT & Mobile", "min_amt": -4500.0, "max_amt": -7500.0}
-    ]
-    chosen_sec = random.choice(second_anoms)
-    sec_amount = round(random.uniform(chosen_sec["min_amt"], chosen_sec["max_amt"]), 2)
-    sec_date = today - datetime.timedelta(days=random.randint(4, 15))
-    txs.append({
-        "id": f"{bank_id}-tx-anom-2",
-        "type": "CARD_PAYMENT",
-        "state": "COMPLETED",
-        "created_at": sec_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "completed_at": sec_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "reference": chosen_sec["ref"],
-        "legs": [{
-            "leg_id": f"{bank_id}-leg-anom-2",
-            "account_id": f"{bank_id}-acc-1",
-            "amount": sec_amount,
-            "currency": "RON",
-            "description": chosen_sec["desc"]
-        }]
-    })
+        # 5. Transport (2-3 tranzacții pe lună)
+        transport_merchants = [
+            {"ref": "Plata POS Uber ridesharing", "desc": "Uber Bucharest", "base_amount": -15.0, "var": 30},
+            {"ref": "Plata POS Bolt ridesharing", "desc": "Bolt Cursa", "base_amount": -12.0, "var": 25}
+        ]
+        for idx, tm in enumerate(transport_merchants):
+            amount = tm["base_amount"] - random.uniform(0, tm["var"])
+            amount = round(amount, 2)
+            t_date = today - datetime.timedelta(days=days_base + random.randint(1, 28))
+            txs.append({
+                "id": f"{bank_id}-tx-trans-{month_offset}-{idx}",
+                "type": "CARD_PAYMENT",
+                "state": "COMPLETED",
+                "created_at": t_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "completed_at": t_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "reference": tm["ref"],
+                "legs": [{
+                    "leg_id": f"{bank_id}-leg-trans-{month_offset}-{idx}",
+                    "account_id": f"{bank_id}-acc-1",
+                    "amount": amount,
+                    "currency": "RON",
+                    "description": tm["desc"]
+                }]
+            })
+
+        # 6. Divertisment & Cumpărături
+        ent_options = [
+            {"ref": "Spotify Premium", "desc": "Spotify Stockholm", "amount": -25.0},
+            {"ref": "Cumparaturi eMAG", "desc": "eMAG.ro Showroom", "base_amount": -100.0, "var": 250}
+        ]
+        if bank_id == "ing":
+            ent_options.append({"ref": "Abonament Netflix Amsterdam", "desc": "Netflix Amsterdam", "amount": -65.0})
+        else:
+            ent_options.append({"ref": "Netflix Subscription", "desc": "Netflix.com payment", "amount": -65.0})
+
+        for idx, em in enumerate(ent_options):
+            if "amount" in em:
+                amount = em["amount"]
+            else:
+                amount = em["base_amount"] - random.uniform(0, em["var"])
+            amount = round(amount, 2)
+            ent_date = today - datetime.timedelta(days=days_base + random.randint(1, 28))
+            txs.append({
+                "id": f"{bank_id}-tx-ent-{month_offset}-{idx}",
+                "type": "CARD_PAYMENT",
+                "state": "COMPLETED",
+                "created_at": ent_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "completed_at": ent_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "reference": em["ref"],
+                "legs": [{
+                    "leg_id": f"{bank_id}-leg-ent-{month_offset}-{idx}",
+                    "account_id": f"{bank_id}-acc-1",
+                    "amount": amount,
+                    "currency": "RON",
+                    "description": em["desc"]
+                }]
+            })
+
+        # 7. Sănătate & Fitness (Abonament sală + farmacie)
+        health_merchants = [
+            {"ref": "Plata POS Farmacia Tei", "desc": "Farmacia Tei POS", "base_amount": -45.0, "var": 90},
+            {"ref": "Abonament WorldClass", "desc": "WorldClass fitness", "base_amount": -180.0, "var": 0}
+        ]
+        for idx, hm in enumerate(health_merchants):
+            amount = hm["base_amount"] - random.uniform(0, hm.get("var", 0))
+            amount = round(amount, 2)
+            h_date = today - datetime.timedelta(days=days_base + random.randint(1, 28))
+            txs.append({
+                "id": f"{bank_id}-tx-health-{month_offset}-{idx}",
+                "type": "CARD_PAYMENT",
+                "state": "COMPLETED",
+                "created_at": h_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "completed_at": h_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "reference": hm["ref"],
+                "legs": [{
+                    "leg_id": f"{bank_id}-leg-health-{month_offset}-{idx}",
+                    "account_id": f"{bank_id}-acc-1",
+                    "amount": amount,
+                    "currency": "RON",
+                    "description": hm["desc"]
+                }]
+            })
+
+        # 8. Investiții (lunar)
+        inv_amount = -(300.0 + random.randint(1, 10) * 100.0)
+        inv_date = today - datetime.timedelta(days=days_base + random.randint(1, 28))
+        txs.append({
+            "id": f"{bank_id}-tx-invest-{month_offset}",
+            "type": "TRANSFER",
+            "state": "COMPLETED",
+            "created_at": inv_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "completed_at": inv_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "reference": "Transfer cont tranzactionare Tradeville",
+            "legs": [{
+                "leg_id": f"{bank_id}-leg-invest-{month_offset}",
+                "account_id": f"{bank_id}-acc-1",
+                "amount": inv_amount,
+                "currency": "RON",
+                "description": "Cumparare ETF Tradeville"
+            }]
+        })
+
+    # 9. Anomalii (1 în fiecare lună din ultimele 3 luni)
+    for month_offset in range(3):
+        days_base = month_offset * 30
+        if bank_id == "bt":
+            anom_ref = "Catering eveniment BT Cafe"
+            anom_desc = "BT Cafe aniversare"
+            anom_val = -1450.0
+        elif bank_id == "ing":
+            anom_ref = "Catering aniversare restaurant"
+            anom_desc = "Restaurant Tazz ING Pay"
+            anom_val = -1450.0
+        elif bank_id == "bcr":
+            anom_ref = "Catering eveniment privat & restaurant aniversare"
+            anom_desc = "Catering George"
+            anom_val = -1450.0
+        else:
+            anom_ref = "Catering aniversare restaurant"
+            anom_desc = "Restaurant aniversare"
+            anom_val = -1450.0
+            
+        anom_date = today - datetime.timedelta(days=days_base + random.randint(3, 18))
+        txs.append({
+            "id": f"{bank_id}-tx-anom-1-{month_offset}",
+            "type": "CARD_PAYMENT",
+            "state": "COMPLETED",
+            "created_at": anom_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "completed_at": anom_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "reference": anom_ref,
+            "legs": [{
+                "leg_id": f"{bank_id}-leg-anom-1-{month_offset}",
+                "account_id": f"{bank_id}-acc-1",
+                "amount": anom_val,
+                "currency": "RON",
+                "description": anom_desc
+            }]
+        })
+
+        # O a doua anomalie mare (doar în luna curentă, month_offset == 0)
+        if month_offset == 0:
+            second_anoms = [
+                {"ref": "Plata POS Altex Romania - Achizitie Laptop Gaming", "desc": "Altex Gaming System", "min_amt": -3500.0, "max_amt": -6000.0},
+                {"ref": "Plata POS Dedeman - Achizitie Materiale Constructii", "desc": "Dedeman - Renovare apartament", "min_amt": -3000.0, "max_amt": -5500.0},
+                {"ref": "Plata POS eMAG - Achizitie iPhone Pro Max", "desc": "eMAG IT & Mobile", "min_amt": -4500.0, "max_amt": -7500.0}
+            ]
+            chosen_sec = random.choice(second_anoms)
+            sec_amount = round(random.uniform(chosen_sec["min_amt"], chosen_sec["max_amt"]), 2)
+            sec_date = today - datetime.timedelta(days=random.randint(4, 15))
+            txs.append({
+                "id": f"{bank_id}-tx-anom-2-current",
+                "type": "CARD_PAYMENT",
+                "state": "COMPLETED",
+                "created_at": sec_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "completed_at": sec_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "reference": chosen_sec["ref"],
+                "legs": [{
+                    "leg_id": f"{bank_id}-leg-anom-2-current",
+                    "account_id": f"{bank_id}-acc-1",
+                    "amount": sec_amount,
+                    "currency": "RON",
+                    "description": chosen_sec["desc"]
+                }]
+            })
 
     txs.sort(key=lambda x: x["created_at"], reverse=True)
     return txs
